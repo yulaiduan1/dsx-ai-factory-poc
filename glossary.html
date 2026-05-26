@@ -284,8 +284,8 @@
 <div class="topbar">
   <div class="logo">NVIDIA<span>Docs</span></div>
   <nav>
-    <a href="dsx-ai-factory-poc.html">DSX Platform</a>
-    <a href="dsx-ai-factory-poc.html">Facilities Infrastructure</a>
+    <a href="index.html">DSX Platform</a>
+    <a href="index.html">Facilities Infrastructure</a>
     <a href="glossary.html">Glossary</a>
   </nav>
 </div>
@@ -294,7 +294,7 @@
   <a href="#">Home</a><span class="sep">/</span>
   <a href="#">Enterprise</a><span class="sep">/</span>
   <a href="#">DSX Platform</a><span class="sep">/</span>
-  <a href="dsx-ai-factory-poc.html">Facilities Infrastructure</a><span class="sep">/</span>
+  <a href="index.html">Facilities Infrastructure</a><span class="sep">/</span>
   <span class="current">Glossary & Acronyms</span>
 </div>
 
@@ -328,7 +328,7 @@
 
   <div class="source-block">
     <strong>Sources:</strong> Acronyms drawn from the <em>NVIDIA DSX Vera Rubin RAM Study</em> (Jacobs U.K., D4075100_RAM01, May 2026) and the <em>DSX Facilities Infrastructure Design Guide</em>, v1.0. Pin references link back to the interactive site plan.<br /><br />
-    <a href="dsx-ai-factory-poc.html">← Back to the interactive site plan</a>
+    <a href="index.html">← Back to the interactive site plan</a>
   </div>
 </section>
 
@@ -482,7 +482,7 @@ const azIndex = document.getElementById("az-index");
 function render() {
   termsEl.innerHTML = TERMS.map(t => {
     const pinLink = t.pin && PIN_LABELS[t.pin]
-      ? `<a class="pin-link" href="dsx-ai-factory-poc.html?open=${t.pin}">See on site plan: ${PIN_LABELS[t.pin]}</a>`
+      ? `<a class="pin-link" href="index.html?open=${t.pin}">See on site plan: ${PIN_LABELS[t.pin]}</a>`
       : "";
     return `<div class="term" data-cat="${t.category}" data-text="${(t.acronym + ' ' + t.full + ' ' + t.body).toLowerCase()}" data-first="${t.acronym.charAt(0).toUpperCase()}">
       <span class="anchor-offset" id="${t.anchor}"></span>
