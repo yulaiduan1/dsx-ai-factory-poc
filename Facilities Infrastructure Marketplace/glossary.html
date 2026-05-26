@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Glossary & Acronyms — DSX Facilities Infrastructure | NVIDIA Docs</title>
+<style>
+  :root {
+    --nv-green: #76B900;
+    --nv-green-dark: #5e9400;
+    --nv-black: #000000;
+    --ink: #1a1a1a;
+    --ink-2: #4a4a4a;
+    --ink-3: #6b6b6b;
+    --line: #e5e5e5;
+    --line-2: #f0f0f0;
+    --bg: #ffffff;
+    --bg-2: #fafafa;
+    --bg-3: #f5f5f5;
+    --shadow: 0 8px 32px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "NVIDIA Sans", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--nv-green-dark); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .topbar {
+    background: var(--nv-black);
+    color: #fff;
+    padding: 12px 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 14px;
+  }
+  .topbar .logo { font-weight: 700; color: var(--nv-green); letter-spacing: 0.5px; }
+  .topbar .logo span { color: #fff; font-weight: 400; margin-left: 4px; }
+  .topbar nav { display: flex; gap: 20px; }
+  .topbar nav a { color: #ddd; }
+  .topbar nav a:hover { color: #fff; text-decoration: none; }
+
+  .breadcrumb {
+    padding: 14px 48px;
+    font-size: 13px;
+    color: var(--ink-3);
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--line);
+  }
+  .breadcrumb a { color: var(--ink-3); }
+  .breadcrumb .sep { margin: 0 8px; color: var(--ink-3); }
+  .breadcrumb .current { color: var(--ink); }
+
+  .hero {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 48px 24px;
+  }
+  .hero .eyebrow {
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    color: var(--nv-green-dark);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-size: 40px;
+    font-weight: 300;
+    margin: 0 0 16px;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+  }
+  .hero h1 strong { font-weight: 600; }
+  .hero .lede {
+    font-size: 18px;
+    color: var(--ink-2);
+    max-width: 800px;
+    margin: 0;
+  }
+
+  .section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 48px;
+  }
+
+  /* Search + filter bar */
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .search {
+    flex: 1;
+    min-width: 260px;
+    position: relative;
+  }
+  .search input {
+    width: 100%;
+    padding: 12px 14px 12px 40px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .search input:focus { border-color: var(--nv-green); }
+  .search::before {
+    content: "🔍";
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    opacity: 0.5;
+  }
+  .filterbar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .filterbar button {
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--ink-2);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-weight: 500;
+    font-family: inherit;
+  }
+  .filterbar button:hover { border-color: var(--nv-green); color: var(--ink); }
+  .filterbar button.active {
+    background: var(--nv-green);
+    border-color: var(--nv-green);
+    color: #fff;
+  }
+
+  /* A-Z index */
+  .az-index {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 24px;
+    padding: 14px 16px;
+    background: var(--bg-2);
+    border-radius: 6px;
+    border: 1px solid var(--line);
+  }
+  .az-index a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-2);
+    background: #fff;
+    border: 1px solid var(--line);
+    text-decoration: none !important;
+  }
+  .az-index a.empty {
+    color: var(--ink-3);
+    background: transparent;
+    border-color: transparent;
+    cursor: default;
+  }
+  .az-index a:not(.empty):hover {
+    border-color: var(--nv-green);
+    color: var(--nv-green-dark);
+  }
+
+  /* Term list */
+  .terms {
+    border-top: 1px solid var(--line);
+  }
+  .term {
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 24px;
+  }
+  .term.hidden { display: none; }
+  .term-head .term-acronym {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0 0 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .term-head .term-full {
+    color: var(--ink-2);
+    font-size: 14px;
+    margin: 0 0 8px;
+  }
+  .term-head .term-cat {
+    display: inline-block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--nv-green-dark);
+    background: #f4faea;
+    border: 1px solid #d8eab2;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  .term-body {
+    color: var(--ink);
+    font-size: 15px;
+  }
+  .term-body p { margin: 0 0 8px; }
+  .term-body p:last-child { margin-bottom: 0; }
+  .term-body .pin-link {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--nv-green-dark);
+    font-weight: 500;
+  }
+  .term-body .pin-link::before { content: "→ "; }
+
+  .anchor-offset {
+    position: relative;
+    top: -120px;
+    visibility: hidden;
+  }
+
+  .no-results {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--ink-3);
+    font-size: 15px;
+    display: none;
+  }
+  .no-results.show { display: block; }
+
+  .source-block {
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+    margin-top: 28px;
+    color: var(--ink-3);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  footer.site {
+    background: var(--bg-2);
+    border-top: 1px solid var(--line);
+    padding: 32px 48px;
+    margin-top: 48px;
+    font-size: 13px;
+    color: var(--ink-3);
+    text-align: center;
+  }
+  footer.site .nvidia-mark { color: var(--nv-green); font-weight: 700; }
+
+  @media (max-width: 720px) {
+    .hero { padding: 32px 24px 16px; }
+    .hero h1 { font-size: 30px; }
+    .section { padding: 20px 24px; }
+    .term { grid-template-columns: 1fr; gap: 10px; }
+    .breadcrumb { padding: 12px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">NVIDIA<span>Docs</span></div>
+  <nav>
+    <a href="dsx-ai-factory-poc.html">DSX Platform</a>
+    <a href="dsx-ai-factory-poc.html">Facilities Infrastructure</a>
+    <a href="glossary.html">Glossary</a>
+  </nav>
+</div>
+
+<div class="breadcrumb">
+  <a href="#">Home</a><span class="sep">/</span>
+  <a href="#">Enterprise</a><span class="sep">/</span>
+  <a href="#">DSX Platform</a><span class="sep">/</span>
+  <a href="dsx-ai-factory-poc.html">Facilities Infrastructure</a><span class="sep">/</span>
+  <span class="current">Glossary & Acronyms</span>
+</div>
+
+<section class="hero">
+  <div class="eyebrow">DSX Facilities Infrastructure · Reference</div>
+  <h1>Glossary &amp; <strong>Acronyms</strong></h1>
+  <p class="lede">
+    Plain-language definitions for the terminology used across the DSX Facilities Infrastructure Design Guide and the Jacobs RAM Study — power, cooling, reliability, and the DSX-specific terms you'll see on the site plan.
+  </p>
+</section>
+
+<section class="section">
+  <div class="toolbar">
+    <div class="search">
+      <input type="text" id="search" placeholder="Search terms, acronyms, or definitions…" autocomplete="off" />
+    </div>
+    <div class="filterbar" id="filterbar">
+      <button class="active" data-cat="all">All</button>
+      <button data-cat="power">Power</button>
+      <button data-cat="cooling">Cooling</button>
+      <button data-cat="reliability">Reliability</button>
+      <button data-cat="compute">Compute &amp; Network</button>
+      <button data-cat="site">Site &amp; Ops</button>
+    </div>
+  </div>
+
+  <nav class="az-index" id="az-index"></nav>
+
+  <div class="terms" id="terms"></div>
+  <div class="no-results" id="no-results">No terms match your search.</div>
+
+  <div class="source-block">
+    <strong>Sources:</strong> Acronyms drawn from the <em>NVIDIA DSX Vera Rubin RAM Study</em> (Jacobs U.K., D4075100_RAM01, May 2026) and the <em>DSX Facilities Infrastructure Design Guide</em>, v1.0. Pin references link back to the interactive site plan.<br /><br />
+    <a href="dsx-ai-factory-poc.html">← Back to the interactive site plan</a>
+  </div>
+</section>
+
+<footer class="site">
+  <span class="nvidia-mark">NVIDIA</span> · DSX Glossary &amp; Acronyms · Proof-of-concept for docs.nvidia.com
+</footer>
+
+<script>
+const TERMS = [
+  // ===== POWER =====
+  { acronym: "BESS", full: "Battery Energy Storage System", category: "power",
+    body: "Battery banks tied to the 34.5 kV switchgear that stabilize AI workload ramp rates, ride through sub-second utility events, and bridge to backup generation. Required for every DSX configuration.",
+    pin: "bess", anchor: "bess" },
+  { acronym: "MSG", full: "Main Switchgear", category: "power",
+    body: "The 34.5 kV main switchgear stage immediately downstream of the 230/34.5 kV transformers. Four MSGs operate in N+1 configuration.",
+    anchor: "msg" },
+  { acronym: "MVS", full: "Medium Voltage Switchboard", category: "power",
+    body: "The next stage down from the MSGs — distributes 34.5 kV into each building block. Connected in a loop with one end Normally Closed and the other Normally Open. The RAM study identifies the MVS layer as the dominant factor in achieving 5-9's at Core.",
+    anchor: "mvs" },
+  { acronym: "MV / HV / LV", full: "Medium / High / Low Voltage", category: "power",
+    body: "MV = 34.5 kV class. HV = 230 kV utility transmission. LV = 480 V switchboards and below. The DSX backbone is MV; ride-through and cooling support live on LV.",
+    anchor: "mv" },
+  { acronym: "XFMR", full: "Transformer", category: "power",
+    body: "Power transformer. Used throughout: 230/34.5 kV at the substation, 34.5/0.48 kV at the building, and 4.16 kV step-downs for chillers. XFMR repair MTTR (168 hr vs 720 hr) drives much of the CCF tolerance in the RAM model.",
+    anchor: "xfmr" },
+  { acronym: "UPS", full: "Uninterruptable Power Supply", category: "power",
+    body: "415 V UPS systems support Core network racks and indoor mechanical equipment (CDUs, CRAHs) for ride-through until backup generation is online. Not provided for primary GPU compute loads.",
+    anchor: "ups" },
+  { acronym: "SWBD", full: "Switchboard", category: "power",
+    body: "Generic term for LV (480 V class) switchboards that distribute building power to RPPs and mechanical loads.",
+    anchor: "swbd" },
+  { acronym: "RPP", full: "Remote Power Panel", category: "power",
+    body: "The final-stage LV distribution panel — sits between the building SWBD and individual racks. In the RAM study, 'Up to RPPs' is the deepest availability reporting level.",
+    anchor: "rpp" },
+  { acronym: "N+1 / N+2", full: "Redundancy levels", category: "power",
+    body: "N+1 means one spare beyond what the load requires (the design can lose one unit and still meet load). N+2 means two spares. DSX uses N+1 broadly; the RAM study recommends N+2 on utility feeds for 5-9's GPU.",
+    anchor: "n-plus" },
+  { acronym: "4M3", full: "Four-to-make-three", category: "power",
+    body: "Four parallel units sized so any three can carry the full load (one fails / one in maintenance). Used at the rack-power-shelf level on GPU buildings.",
+    anchor: "4m3" },
+  { acronym: "N.O. / N.C.", full: "Normally Open / Normally Closed", category: "power",
+    body: "Switch states on the MVS loop. One end of each loop is N.C. (closed in steady state, carrying current) and the other N.O. (open, ready to close on a fault).",
+    anchor: "no-nc" },
+
+  // ===== COOLING =====
+  { acronym: "CUB", full: "Central Utility Building", category: "cooling",
+    body: "The mechanical plant — chillers, pumps, and heat-rejection equipment that produce and circulate facility water. Two CUBs (east + west) flank the AI Factory building. Preliminary mechanical load ~115 MW.",
+    pin: "cooling-plant", anchor: "cub" },
+  { acronym: "CDU", full: "Coolant Distribution Unit", category: "cooling",
+    body: "The bridge between the facility cooling loop and the rack — CDUs isolate fluids, regulate pressure, and deliver coolant directly to GPU cold plates. Categories: liquid-to-liquid and liquid-to-air.",
+    pin: "cdus", anchor: "cdu" },
+  { acronym: "CRAH", full: "Computer Room Air Handler", category: "cooling",
+    body: "Air-handling unit for any remaining air-cooled support equipment in the Deployment Unit. Largely supplanted by direct-to-chip liquid cooling on GPU racks.",
+    anchor: "crah" },
+  { acronym: "Dry Coolers", full: "Dry Coolers", category: "cooling",
+    body: "Outdoor finned-tube heat exchangers that reject heat to ambient air, with no evaporative water use. Positioned at the far east and west of the site, north of each CUB.",
+    pin: "dry-coolers", anchor: "dry-coolers" },
+  { acronym: "PUE", full: "Power Usage Efficiency", category: "cooling",
+    body: "Industry-standard ratio of total facility power to IT-equipment power. DSX site total power is ~360 MW for ~250 MW IT load → PUE-equivalent ~1.44.",
+    anchor: "pue" },
+
+  // ===== RELIABILITY =====
+  { acronym: "RAM", full: "Reliability, Availability and Maintainability", category: "reliability",
+    body: "The discipline of quantifying how often a system fails, how long it stays down, and how easily it's restored. The Jacobs RAM Study (D4075100_RAM01) is the basis for the availability figures in DSX docs.",
+    anchor: "ram" },
+  { acronym: "MTBF", full: "Mean Time Between Failure", category: "reliability",
+    body: "Average operational time between consecutive failures of an item. Used (with MDT/MTTR) to compute steady-state availability: A = MTBF / (MTBF + MDT).",
+    anchor: "mtbf" },
+  { acronym: "MTTR", full: "Mean Time To Repair", category: "reliability",
+    body: "Average time to repair a fault and restore the item to service. Includes logistics + repair time (not only active repair). Transformer MTTR is the dominant CCF-tolerance lever in the RAM model.",
+    anchor: "mttr" },
+  { acronym: "MDT", full: "Mean Down Time", category: "reliability",
+    body: "Average down time per failure — includes detection, logistics, and repair. Used directly in the steady-state availability formula.",
+    anchor: "mdt" },
+  { acronym: "CCF", full: "Common Cause Failure", category: "reliability",
+    body: "A single event that causes simultaneous failure of multiple redundant channels — e.g., a weather event taking out both N+1 feeds. Modeled in the RAM study with a 5% β-factor in the base case.",
+    anchor: "ccf" },
+  { acronym: "SPoF", full: "Single Point of Failure", category: "reliability",
+    body: "Any item whose failure brings down the service alone. The RAM study flags gas generators as SPoF risks if redundancy per power pack is reduced.",
+    anchor: "spof" },
+  { acronym: "FMEA", full: "Failure Modes and Effects Analysis", category: "reliability",
+    body: "Bottom-up technique that walks through every component, lists how it could fail, and assesses the impact. The RAM study recommends an FMEA on transformers given their long lead times.",
+    anchor: "fmea" },
+  { acronym: "RBD", full: "Reliability Block Diagram", category: "reliability",
+    body: "A logical model of which components must be operating for the system to function. Used in the RAM analysis to compute availability at each reporting level (Utility → MSG → MVS → RPP).",
+    anchor: "rbd" },
+  { acronym: "5-9's / 3-9's", full: "Availability targets", category: "reliability",
+    body: "Five 9's = 99.999% (≈5.26 min/yr downtime). Three 9's = 99.9% (≈8.76 hr/yr). DSX Core targets 5-9's; GPU compute halls target 3-9's.",
+    anchor: "nines" },
+
+  // ===== COMPUTE & NETWORK =====
+  { acronym: "GPU", full: "Graphics Processing Unit", category: "compute",
+    body: "The compute engine of the AI Factory. DSX is built around the Vera Rubin generation, with cabinet TDP scaling from 198 kW (MGX 1.1) to 660 kW (MGX 1.3).",
+    pin: "data-hall-compute", anchor: "gpu" },
+  { acronym: "DH", full: "Data Hall", category: "compute",
+    body: "One of the four Compute Data Halls — each is its own discrete availability zone at 99.9% and contains 6 Deployment Units.",
+    pin: "data-hall-compute", anchor: "dh" },
+  { acronym: "DU", full: "Deployment Unit", category: "compute",
+    body: "A repeatable cluster pattern containing GPU racks, support racks, and CDUs. 6 DUs per Data Hall, 24 DUs per site, ~10 MW IT load each.",
+    anchor: "du" },
+  { acronym: "CIN", full: "Cluster Interconnect Network", category: "compute",
+    body: "The East-West spine that fuses the four Data Halls into a single training cluster. Central position drives the building geometry (optical-link budget). Scales in steps of 1 / 10 / 32 / 64 / 128 SU.",
+    pin: "fiber", anchor: "cin" },
+  { acronym: "HSS", full: "High Speed Storage", category: "compute",
+    body: "Storage tier in the Network Core — feeds training data and checkpoints to the GPU halls.",
+    anchor: "hss" },
+  { acronym: "TAN", full: "Tenant Access Network", category: "compute",
+    body: "The tenant-facing North-South network in the Network Core building. Lives on the 5-9's Core electrical tier.",
+    pin: "data-hall-storage", anchor: "tan" },
+  { acronym: "MMR", full: "Meet Me Room", category: "compute",
+    body: "The Main Point of Entry where external carrier fiber lands on the campus and cross-connects to the tenant networks.",
+    anchor: "mmr" },
+
+  // ===== SITE & OPS =====
+  { acronym: "IT", full: "Information Technology", category: "site",
+    body: "Used in the RAM study to distinguish IT load (GPU + Core + storage = ~250 MW) from total site power (~360 MW including mechanical and house loads).",
+    anchor: "it" },
+  { acronym: "OT", full: "Operational Technology", category: "site",
+    body: "Plant-control side of the campus — BMS, power telemetry, generator controls. Increasingly automated via DSX MaxQ / DSX Flex.",
+    anchor: "ot" },
+  { acronym: "MW / kV", full: "Megawatt / kilovolt", category: "site",
+    body: "Standard SI units. 1 MW = 1,000 kW. 1 kV = 1,000 V. DSX site totals are quoted in MW for power and kV for voltage.",
+    anchor: "mw-kv" }
+];
+
+// Sort alphabetically by acronym, but push digit-leading acronyms (4M3, 5-9's) to the bottom
+TERMS.sort((a, b) => {
+  const aDigit = /^[0-9]/.test(a.acronym);
+  const bDigit = /^[0-9]/.test(b.acronym);
+  if (aDigit !== bDigit) return aDigit ? 1 : -1;
+  return a.acronym.localeCompare(b.acronym);
+});
+
+const PIN_LABELS = {
+  "bess": "BESS — Battery Energy Storage",
+  "storm-water": "Storm Water Detention Basin",
+  "dry-coolers": "Dry Coolers (Heat Rejection)",
+  "cooling-plant": "Central Utility Building (CUB)",
+  "cdus": "CDUs — Cooling Distribution",
+  "data-hall-compute": "Compute Data Hall",
+  "data-hall-storage": "Storage & Management Hall",
+  "fiber": "Cluster Interconnect (Fiber Spine)"
+};
+
+const termsEl = document.getElementById("terms");
+const noResults = document.getElementById("no-results");
+const searchEl = document.getElementById("search");
+const filterbar = document.getElementById("filterbar");
+const azIndex = document.getElementById("az-index");
+
+function render() {
+  termsEl.innerHTML = TERMS.map(t => {
+    const pinLink = t.pin && PIN_LABELS[t.pin]
+      ? `<a class="pin-link" href="dsx-ai-factory-poc.html?open=${t.pin}">See on site plan: ${PIN_LABELS[t.pin]}</a>`
+      : "";
+    return `<div class="term" data-cat="${t.category}" data-text="${(t.acronym + ' ' + t.full + ' ' + t.body).toLowerCase()}" data-first="${t.acronym.charAt(0).toUpperCase()}">
+      <span class="anchor-offset" id="${t.anchor}"></span>
+      <div class="term-head">
+        <h2 class="term-acronym">${t.acronym}</h2>
+        <p class="term-full">${t.full}</p>
+        <span class="term-cat">${prettyCat(t.category)}</span>
+      </div>
+      <div class="term-body">
+        <p>${t.body}</p>
+        ${pinLink}
+      </div>
+    </div>`;
+  }).join("");
+  buildAZ();
+}
+
+function prettyCat(c) {
+  return { power: "Power", cooling: "Cooling", reliability: "Reliability", compute: "Compute & Network", site: "Site & Ops" }[c] || c;
+}
+
+function buildAZ() {
+  const present = new Set();
+  TERMS.forEach(t => present.add(t.acronym.charAt(0).toUpperCase()));
+  let html = "";
+  for (let i = 0; i < 26; i++) {
+    const letter = String.fromCharCode(65 + i);
+    if (present.has(letter)) {
+      const target = TERMS.find(t => t.acronym.charAt(0).toUpperCase() === letter);
+      html += `<a href="#${target.anchor}">${letter}</a>`;
+    } else {
+      html += `<a class="empty">${letter}</a>`;
+    }
+  }
+  azIndex.innerHTML = html;
+}
+
+function applyFilters() {
+  const q = searchEl.value.trim().toLowerCase();
+  const cat = filterbar.querySelector("button.active").dataset.cat;
+  let visible = 0;
+  document.querySelectorAll(".term").forEach(el => {
+    const matchesCat = cat === "all" || el.dataset.cat === cat;
+    const matchesQ = !q || el.dataset.text.includes(q);
+    if (matchesCat && matchesQ) {
+      el.classList.remove("hidden");
+      visible++;
+    } else {
+      el.classList.add("hidden");
+    }
+  });
+  noResults.classList.toggle("show", visible === 0);
+}
+
+searchEl.addEventListener("input", applyFilters);
+filterbar.addEventListener("click", e => {
+  if (e.target.tagName !== "BUTTON") return;
+  filterbar.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+  e.target.classList.add("active");
+  applyFilters();
+});
+
+render();
+</script>
+
+</body>
+</html>
