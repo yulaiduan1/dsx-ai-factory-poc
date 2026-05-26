@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DSX Facilities Infrastructure — Inside an AI Factory | NVIDIA Docs</title>
+<style>
+  :root {
+    --nv-green: #76B900;
+    --nv-green-dark: #5e9400;
+    --nv-black: #000000;
+    --ink: #1a1a1a;
+    --ink-2: #4a4a4a;
+    --ink-3: #6b6b6b;
+    --line: #e5e5e5;
+    --line-2: #f0f0f0;
+    --bg: #ffffff;
+    --bg-2: #fafafa;
+    --bg-3: #f5f5f5;
+    --shadow: 0 8px 32px rgba(0,0,0,0.08);
+    --shadow-lg: 0 16px 48px rgba(0,0,0,0.14);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "NVIDIA Sans", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--nv-green-dark); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .topbar {
+    background: var(--nv-black);
+    color: #fff;
+    padding: 12px 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 14px;
+  }
+  .topbar .logo { font-weight: 700; color: var(--nv-green); letter-spacing: 0.5px; }
+  .topbar .logo span { color: #fff; font-weight: 400; margin-left: 4px; }
+  .topbar nav { display: flex; gap: 20px; }
+  .topbar nav a { color: #ddd; }
+  .topbar nav a:hover { color: #fff; text-decoration: none; }
+
+  .breadcrumb {
+    padding: 14px 48px;
+    font-size: 13px;
+    color: var(--ink-3);
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--line);
+  }
+  .breadcrumb a { color: var(--ink-3); }
+  .breadcrumb .sep { margin: 0 8px; color: var(--ink-3); }
+  .breadcrumb .current { color: var(--ink); }
+
+  .hero {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 48px 48px 24px;
+  }
+  .hero .eyebrow {
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    color: var(--nv-green-dark);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-size: 44px;
+    font-weight: 300;
+    margin: 0 0 16px;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+  }
+  .hero h1 strong { font-weight: 600; }
+  .hero .lede {
+    font-size: 18px;
+    color: var(--ink-2);
+    max-width: 880px;
+    margin: 0;
+  }
+  .hero .site-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 22px;
+    flex-wrap: wrap;
+  }
+  .hero .site-stats .s {
+    border-left: 3px solid var(--nv-green);
+    padding-left: 14px;
+  }
+  .hero .site-stats .s .lbl {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: var(--ink-3);
+  }
+  .hero .site-stats .s .val {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .section {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 48px;
+  }
+  .section h2 {
+    font-size: 28px;
+    font-weight: 400;
+    margin: 0 0 8px;
+    letter-spacing: -0.3px;
+  }
+  .section .section-sub {
+    color: var(--ink-3);
+    font-size: 15px;
+    margin: 0 0 24px;
+  }
+
+  /* ---------- Interactive stage ---------- */
+  .stage-wrap {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #e8e6df; /* matches plan background tone */
+    box-shadow: var(--shadow);
+  }
+  .stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1631 / 739;
+    background-image: url("ai-factory-render.png");
+    background-size: cover;
+    background-position: center;
+  }
+
+  /* Filter buttons */
+  .filterbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .filterbar button {
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--ink-2);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-weight: 500;
+  }
+  .filterbar button:hover { border-color: var(--nv-green); color: var(--ink); }
+  .filterbar button.active {
+    background: var(--nv-green);
+    border-color: var(--nv-green);
+    color: #fff;
+  }
+
+  /* Hotspots */
+  .hotspot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    z-index: 3;
+    width: 34px; height: 34px;
+  }
+  .hotspot .pulse {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background: var(--nv-green);
+    opacity: 0.45;
+    animation: pulse 2.4s ease-out infinite;
+  }
+  .hotspot .pin {
+    position: absolute; inset: 5px;
+    border-radius: 50%;
+    background: var(--nv-green);
+    color: #fff;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.45);
+    transition: transform 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .hotspot.indoor .pulse { background: #2c5fff; }
+  .hotspot.indoor .pin { background: #2c5fff; }
+  .hotspot:hover .pin { transform: scale(1.15); }
+  .hotspot:hover .pulse { animation-duration: 1.4s; }
+  .hotspot.active .pin { background: #fff; color: var(--nv-green); }
+  .hotspot.indoor.active .pin { color: #2c5fff; }
+  .hotspot.active .pulse { background: #fff; }
+  .hotspot.dim { opacity: 0.18; }
+
+  @keyframes pulse {
+    0%   { transform: scale(0.6); opacity: 0.7; }
+    100% { transform: scale(2.4); opacity: 0; }
+  }
+
+  .hotspot .label {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.88);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 4;
+  }
+  .hotspot:hover .label { opacity: 1; }
+
+  /* Legend overlay */
+  .legend {
+    position: absolute;
+    left: 16px; bottom: 16px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--ink-2);
+    border: 1px solid var(--line);
+    z-index: 2;
+    max-width: 320px;
+  }
+  .legend strong { color: var(--ink); display: block; margin-bottom: 4px; }
+  .legend .legend-dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    background: var(--nv-green);
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  .scalebar {
+    position: absolute;
+    right: 16px; bottom: 16px;
+    background: rgba(255,255,255,0.95);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--ink-2);
+    z-index: 2;
+  }
+
+  /* ---------- Side panel ---------- */
+  .panel-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 100;
+  }
+  .panel-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .panel {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: min(540px, 92vw);
+    background: #fff;
+    box-shadow: var(--shadow-lg);
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+    z-index: 101;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .panel.open { transform: translateX(0); }
+
+  .panel-head {
+    padding: 22px 28px 18px;
+    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; background: #fff; z-index: 1;
+  }
+  .panel-head .marker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--nv-green);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .panel-head .marker.indoor { background: #2c5fff; }
+  .panel-head .category {
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 11px;
+    color: var(--nv-green-dark);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .panel-head .category.indoor { color: #2c5fff; }
+  .panel-head h3 {
+    margin: 6px 0 0;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.2;
+    padding-right: 36px;
+  }
+  .panel-close {
+    position: absolute;
+    top: 18px; right: 16px;
+    background: transparent;
+    border: 0;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--ink-2);
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .panel-close:hover { background: var(--bg-3); }
+
+  .panel-body {
+    padding: 22px 28px 32px;
+    flex: 1;
+  }
+  .panel-body p {
+    color: var(--ink-2);
+    font-size: 15px;
+    margin: 0 0 16px;
+  }
+  .panel-body p:first-of-type { color: var(--ink); font-size: 16px; }
+
+  .panel-section { margin-top: 24px; }
+  .panel-section h4 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink-3);
+    font-weight: 600;
+    margin: 0 0 10px;
+  }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .stat {
+    background: var(--bg-2);
+    border-left: 3px solid var(--nv-green);
+    padding: 10px 14px;
+    border-radius: 4px;
+  }
+  .stat.indoor { border-left-color: #2c5fff; }
+  .stat .stat-label {
+    font-size: 11px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .stat .stat-val {
+    font-size: 14px;
+    color: var(--ink);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  .stack-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f4faea;
+    color: var(--nv-green-dark);
+    border: 1px solid #d8eab2;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .stack-pill.indoor { background: #e9efff; color: #1a3fce; border-color: #c8d4ff; }
+  .stack-pill::before {
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--nv-green);
+  }
+  .stack-pill.indoor::before { background: #2c5fff; }
+  a.stack-pill {
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  a.stack-pill:hover {
+    background: #ecf6d8;
+    border-color: var(--nv-green);
+    text-decoration: none;
+  }
+  a.stack-pill::after {
+    content: "→";
+    margin-left: 2px;
+    color: var(--nv-green-dark);
+  }
+
+  /* Related components chips */
+  .rel-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .rel-chip {
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+  }
+  .rel-chip:hover {
+    border-color: var(--nv-green);
+    background: #fbfff2;
+    color: var(--nv-green-dark);
+  }
+  .rel-chip::before {
+    content: "↗ ";
+    color: var(--ink-3);
+    margin-right: 2px;
+  }
+  .rel-chip:hover::before { color: var(--nv-green-dark); }
+
+  /* Source footer in panel */
+  .source-footer {
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--ink-3);
+    line-height: 1.5;
+  }
+  .source-footer em { color: var(--ink-2); font-style: normal; font-weight: 500; }
+  .source-footer a { color: var(--nv-green-dark); }
+
+  .panel ul.tight {
+    margin: 6px 0 16px;
+    padding-left: 18px;
+    color: var(--ink-2);
+    font-size: 14px;
+  }
+  .panel ul.tight li { margin-bottom: 4px; }
+
+  .learn-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 10px 18px;
+    background: var(--nv-green);
+    color: #fff !important;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 14px;
+    text-decoration: none !important;
+  }
+  .learn-more:hover { background: var(--nv-green-dark); }
+  .learn-more::after { content: "→"; }
+
+  /* ---------- AI Factory Resources section ---------- */
+  .resources {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 24px;
+  }
+  .resource-card {
+    display: flex;
+    flex-direction: column;
+    padding: 22px 22px 20px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    text-decoration: none !important;
+    color: inherit;
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .resource-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--nv-green);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .resource-card:hover {
+    border-color: var(--nv-green);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .resource-card:hover::before { opacity: 1; }
+  .resource-card .res-kind {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--nv-green-dark);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .resource-card h3 {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0 0 8px;
+    line-height: 1.3;
+  }
+  .resource-card p {
+    margin: 0 0 14px;
+    font-size: 13px;
+    color: var(--ink-3);
+    line-height: 1.5;
+    flex: 1;
+  }
+  .resource-card .res-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--nv-green-dark);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .resource-card .res-link::after {
+    content: "↗";
+    transition: transform 0.15s ease;
+  }
+  .resource-card:hover .res-link::after { transform: translate(2px, -2px); }
+  .resource-card .res-domain {
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-top: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  /* Per-pin "Further reading" block inside the side panel */
+  .further-reading {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .further-reading a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--nv-green-dark);
+    padding: 4px 0;
+  }
+  .further-reading a::before {
+    content: "↗";
+    color: var(--ink-3);
+    font-size: 11px;
+  }
+  .further-reading a:hover { text-decoration: underline; }
+  .further-reading .fr-domain {
+    color: var(--ink-3);
+    font-size: 11px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    margin-left: 4px;
+  }
+
+  /* ---------- DSX Pillars section ---------- */
+  .stack {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .stack-card {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 20px;
+    background: #fff;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .stack-card.focus {
+    border-color: var(--nv-green);
+    background: #fbfff2;
+  }
+  .stack-card:hover {
+    border-color: var(--nv-green);
+    transform: translateY(-2px);
+  }
+  .stack-card .stack-num {
+    font-size: 11px;
+    color: var(--nv-green-dark);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+  .stack-card h3 {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0 0 8px;
+  }
+  .stack-card .pillar-sub {
+    color: var(--nv-green-dark);
+    font-size: 13px;
+    margin: 0 0 10px;
+    font-weight: 500;
+  }
+  .stack-card p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ink-3);
+    line-height: 1.55;
+  }
+
+  footer.site {
+    background: var(--bg-2);
+    border-top: 1px solid var(--line);
+    padding: 32px 48px;
+    margin-top: 48px;
+    font-size: 13px;
+    color: var(--ink-3);
+    text-align: center;
+  }
+  footer.site .nvidia-mark { color: var(--nv-green); font-weight: 700; }
+
+  @media (max-width: 960px) {
+    .hero { padding: 32px 24px 16px; }
+    .hero h1 { font-size: 32px; }
+    .section { padding: 24px; }
+    .stack { grid-template-columns: 1fr; }
+    .resources { grid-template-columns: 1fr; }
+    .breadcrumb { padding: 12px 24px; }
+    .hotspot { width: 28px; height: 28px; }
+    .hotspot .pin { font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">NVIDIA<span>Docs</span></div>
+  <nav>
+    <a href="dsx-ai-factory-poc.html">DSX Platform</a>
+    <a href="dsx-ai-factory-poc.html">Facilities Infrastructure</a>
+    <a href="glossary.html">Glossary</a>
+    <a href="#">Hardware</a>
+    <a href="#">Partners</a>
+  </nav>
+</div>
+
+<div class="breadcrumb">
+  <a href="#">Home</a><span class="sep">/</span>
+  <a href="#">Enterprise</a><span class="sep">/</span>
+  <a href="#">DSX Platform</a><span class="sep">/</span>
+  <a href="#">Facilities Infrastructure</a><span class="sep">/</span>
+  <span class="current">Inside an AI Factory</span>
+</div>
+
+<section class="hero">
+  <div class="eyebrow">DSX Facilities Infrastructure Design Guide · Site Plan Walkthrough</div>
+  <h1>Inside an <strong>AI Factory</strong></h1>
+  <p class="lede">
+    Discover the partner products that power DSX-driven AI factories — fueling the next industrial revolution by transforming knowledge into scalable, intelligent production. This interactive site plan walks through each component of a reference DSX Vera Rubin campus. Click any pin to learn how that element fits the AI Factory.
+  </p>
+  <div class="site-stats">
+    <div class="s"><div class="lbl">Site</div><div class="val">2,967' × 2,110' &middot; 143.72 acres</div></div>
+    <div class="s"><div class="lbl">Building</div><div class="val">816,606 SF &middot; Single Story</div></div>
+    <div class="s"><div class="lbl">IT Load</div><div class="val">240 MW (~360 MW total)</div></div>
+    <div class="s"><div class="lbl">Scale</div><div class="val">Up to 96 Scalable Units</div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="stage-wrap">
+    <div class="stage" id="stage" aria-label="Interactive DSX AI Factory campus">
+      <div class="legend">
+        <strong><span class="legend-dot"></span>Interactive campus</strong>
+        Click any pin to learn how that component fits the DSX platform.
+      </div>
+      <div class="scalebar">Site: 2,967' × 2,110' &middot; 143.72 acres</div>
+    </div>
+  </div>
+  <p class="section-sub" style="margin-top:12px;">Sources: <em>NVIDIA DSX Facilities Infrastructure Design Guide</em>, v1.0 (March 12, 2026); <em>Reliability, Availability and Maintainability (RAM) Study</em>, Jacobs U.K. Limited, D4075100_RAM01 (May 15, 2026). Reference layout — actual deployments are customized per site, OEM, and grid operator.</p>
+</section>
+
+<section class="section">
+  <h2>AI Factory resources</h2>
+  <p class="section-sub">Go deeper on the full DSX AI Factory reference design — power source scenarios, glossary, documentation, and the digital-twin blueprint.</p>
+  <div class="resources">
+    <a class="resource-card" href="glossary.html">
+      <div class="res-kind">Reference · Internal</div>
+      <h3>Glossary & Acronyms</h3>
+      <p>Searchable glossary of DSX terminology — BESS, CUB, CDU, MVS, CCF, MTBF, MTTR, N+1, 4M3, and the rest. Cross-linked back to the relevant pins on the site plan.</p>
+      <span class="res-link">Open glossary</span>
+      <div class="res-domain">glossary.html</div>
+    </a>
+    <a class="resource-card" href="https://docs.nvidia.com/dsx/home" target="_blank" rel="noopener">
+      <div class="res-kind">Documentation</div>
+      <h3>DSX Documentation Home</h3>
+      <p>The full DSX docs portal — hardware, facilities, software, and operational guidance for every layer of the AI Factory stack.</p>
+      <span class="res-link">Open docs</span>
+      <div class="res-domain">docs.nvidia.com/dsx/home</div>
+    </a>
+    <a class="resource-card" href="https://build.nvidia.com/nvidia/omniverse-dsx-blueprint-for-ai-factories" target="_blank" rel="noopener">
+      <div class="res-kind">Digital twin · Blueprint</div>
+      <h3>Omniverse DSX Blueprint for AI Factories</h3>
+      <p>Build a physically accurate digital twin of your AI Factory in Omniverse — for layout, power, cooling, and operations modeling.</p>
+      <span class="res-link">Open blueprint</span>
+      <div class="res-domain">build.nvidia.com</div>
+    </a>
+    <a class="resource-card" href="https://nvidianews.nvidia.com/news/nvidia-releases-vera-rubin-dsx-ai-factory-reference-design-and-omniverse-dsx-digital-twin-blueprint-with-broad-industry-support" target="_blank" rel="noopener">
+      <div class="res-kind">Announcement</div>
+      <h3>Vera Rubin DSX Reference Design</h3>
+      <p>The reference design launch — NVIDIA's Vera Rubin DSX AI Factory blueprint and digital twin, with broad industry partner support.</p>
+      <span class="res-link">Read announcement</span>
+      <div class="res-domain">nvidianews.nvidia.com</div>
+    </a>
+  </div>
+</section>
+
+<section class="section">
+  <h2>The DSX Pillars</h2>
+  <p class="section-sub">An AI Factory rests on three vertically integrated pillars. This walkthrough focuses on the middle pillar — facilities infrastructure.</p>
+  <div class="stack">
+    <div class="stack-card" id="pillar-hardware">
+      <div class="stack-num">Pillar 01</div>
+      <h3>DSX Hardware</h3>
+      <p class="pillar-sub">Racks and Network</p>
+      <p>Compute (GPU racks — e.g. Vera Rubin), East-West network (Spectrum-X), North-South network, and storage. Cabinet TDP scales from MGX Gen 1.1 (198 kW) through Gen 1.3 (up to 660 kW).</p>
+    </div>
+    <div class="stack-card focus" id="pillar-facilities">
+      <div class="stack-num">Pillar 02 — In focus</div>
+      <h3>DSX Facilities Infrastructure</h3>
+      <p class="pillar-sub">Campus, Structures, Power and Cooling</p>
+      <p>Electrical and cooling — chip-to-grid and chip-to-atmosphere. Building structures, controls, and fiber pathways. Everything you see on the site plan to the left.</p>
+    </div>
+    <div class="stack-card" id="pillar-software">
+      <div class="stack-num">Pillar 03</div>
+      <h3>DSX Software</h3>
+      <p class="pillar-sub">Infrastructure as a Service Layer</p>
+      <p>Power management (DSX MaxQ &amp; Flex), operations (observability, break-fix), provisioning (Bare Metal Manager), and networking automation. DSX Exchange brokers data between layers.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <span class="nvidia-mark">NVIDIA</span> · Inside an AI Factory · Proof-of-concept for docs.nvidia.com<br />
+  Reference layout adapted from the DSX Facilities Infrastructure Design Guide v1.0. Replace placeholder "Learn more" links before publish.
+</footer>
+
+<!-- Side panel -->
+<div class="panel-overlay" id="overlay"></div>
+<aside class="panel" id="panel" aria-hidden="true">
+  <div class="panel-head">
+    <div class="category" id="p-category">Component</div>
+    <h3><span class="marker" id="p-marker">1</span><span id="p-title">Title</span></h3>
+    <button class="panel-close" id="p-close" aria-label="Close panel">×</button>
+  </div>
+  <div class="panel-body" id="p-body"></div>
+</aside>
+
+<script>
+/* ---------- Hotspot data ----------
+   Eight core components, conceptually grouped from the v1 POC.
+   Content sourced from the NVIDIA DSX Facilities Infrastructure Design Guide v1.0.
+   Coordinates (x, y) are PERCENTAGES of the 3D render image (1631 × 739) — tweak
+   any pin by adjusting just its x/y fields. The render has a slight 3D tilt, so
+   north (top) compresses and south (bottom) stretches; depth-cue accordingly.
+*/
+const HOTSPOTS = [
+  {
+    id: "substation",
+    x: 50, y: 23,
+    label: "Grid Substation",
+    category: "Power · Facilities",
+    title: "Grid Substation & Utility Interconnect",
+    stackLayer: "DSX Facilities · Power",
+    intro: "The campus's primary handshake with the grid — stepping >100 kV utility transmission down through a 34.5 kV medium-voltage backbone.",
+    body: `<p>The Service Substation lands utility lines above <strong>100 kV</strong> and transforms them through HV→34.5 kV transformers into the campus's medium-voltage backbone. From here a 34.5 kV AIS/GIS Switchgear bus distributes power across the site.</p>
+           <p>Two main switchgear buses serve different reliability tiers: <strong>Bus A1</strong> feeds the Network CORE at 99.999% availability, and <strong>Bus A2</strong> feeds the GPU Compute building at 99.9%. Backup generators and BESS share the same 34.5 kV bus, so the substation is the integration point for flexible power and DSX Flex grid services.</p>`,
+    stats: [
+      ["Utility in", "100 kV+ transmission"],
+      ["Backbone", "34.5 kV AIS/GIS"],
+      ["Switchgear", "34.5 kV, 2,500 A, 40 kA"],
+      ["Bus A1 / A2", "99.999% / 99.9%"]
+    ],
+    bullets: [
+      "HV breaker scheme + HV/34.5 kV transformers",
+      "Two main switchgear buses — Core vs GPU Compute",
+      "Single integration point for utility, Backup Gen, and BESS",
+      "Coordinated with utility grid operator via DSX Exchange"
+    ],
+    extUrl: "https://www.nvidia.com/en-us/data-center/",
+    extLabel: "NVIDIA Data Center",
+    related: ["bess", "operations"],
+    pillar: "facilities",
+    furtherReading: [
+      { url: "https://docs.nvidia.com/dsx/home", label: "DSX Documentation Home", domain: "docs.nvidia.com" },
+      { url: "https://nvidianews.nvidia.com/news/nvidia-releases-vera-rubin-dsx-ai-factory-reference-design-and-omniverse-dsx-digital-twin-blueprint-with-broad-industry-support", label: "Vera Rubin DSX Reference Design (announcement)", domain: "nvidianews.nvidia.com" }
+    ],
+    docLink: "#docs/dsx/facilities/power-substation"
+  },
+  {
+    id: "storm-water",
+    x: 30, y: 30,
+    label: "Storm Water Detention Basin",
+    category: "Site · Civil",
+    title: "Storm Water Detention Basins",
+    stackLayer: "DSX Facilities · Site",
+    intro: "Twin engineered basins on the east and west of the campus that capture, slow, and treat rainwater runoff from the 144-acre site before it leaves the property.",
+    body: `<p>The two detention basins are positioned just outside the building perimeter on the east and west edges of the site. Their job is to <strong>buffer storm flow</strong> — a 144-acre impervious-heavy campus would otherwise dump a wall of water into local watersheds during a heavy rain event. The basins detain that water, allowing solids to settle and discharging slowly at a metered rate that approximates pre-development runoff.</p>
+           <p>Because DSX uses <strong>dry coolers</strong> rather than evaporative cooling, the basins handle <em>rainwater only</em> — there is no process water or cooling-tower blowdown to manage. This dramatically simplifies water permitting and is one of the reasons DSX deployments can land in water-constrained climates that wouldn't support a conventional water-cooled data center.</p>`,
+    stats: [
+      ["Quantity", "Two basins (east + west)"],
+      ["Site area drained", "144.72 acres"],
+      ["Permitting", "EPA NPDES + state stormwater"],
+      ["Cooling water?", "None — dry coolers only"]
+    ],
+    bullets: [
+      "Detains peak storm flow to pre-development discharge rates",
+      "First-flush water quality treatment (settling, filtration)",
+      "No process water or cooling-tower blowdown to manage",
+      "Doubles as a wildlife / landscape amenity when designed naturalistically"
+    ],
+    extUrl: "https://docs.nvidia.com/dsx/home",
+    extLabel: "DSX Documentation Home",
+    related: ["dry-coolers", "operations"],
+    pillar: "facilities",
+    furtherReading: [
+      { url: "glossary.html#cub", label: "Glossary: CUB, dry coolers, water use", domain: "DSX Docs" }
+    ],
+    docLink: "#docs/dsx/facilities/storm-water"
+  },
+  {
+    id: "dry-coolers",
+    x: 76, y: 28,
+    label: "Dry Coolers (Heat Rejection)",
+    category: "Cooling · Facilities",
+    title: "Dry Coolers — Outdoor Heat Rejection",
+    stackLayer: "DSX Facilities · Cooling",
+    intro: "Air-cooled heat exchangers paired with the CUBs — they reject all of the campus's thermal load to atmosphere without consuming a drop of water.",
+    body: `<p>Dry coolers are positioned at the far east and far west of the site, directly north of each Central Utility Building. Warm facility water from the chillers flows through finned-tube heat exchangers; fans pull ambient air across the fins, dumping heat to the air. <strong>No evaporative water use</strong> — a critical siting choice for water-constrained regions.</p>
+           <p>During a utility outage, dry coolers (like the 4.16 kV chillers) shut down because they have no UPS support on the GPU side. The chilled-water thermal mass in the loop is sized to maintain Core operating temperatures for the <strong>~2 minutes</strong> it takes backup generation to bring chiller controllers back online and initiate an automatic restart sequence.</p>`,
+    stats: [
+      ["Function", "Air-side heat rejection"],
+      ["Water use", "None (dry, finned-tube)"],
+      ["Location", "Far east + far west pads"],
+      ["Restart", "Auto after gen restores 4.16 kV"]
+    ],
+    bullets: [
+      "Paired east + west for redundancy",
+      "Eliminates water consumption vs. cooling towers",
+      "Loop thermal mass bridges the ~2-min gen-start gap",
+      "Not UPS-backed on GPU side; auto-restart on Core side"
+    ],
+    extUrl: "https://docs.nvidia.com/dsx/home",
+    extLabel: "DSX Documentation Home",
+    related: ["cooling-plant", "cdus"],
+    pillar: "facilities",
+    furtherReading: [
+      { url: "glossary.html#cub", label: "Glossary: CUB, CDU, CRAH", domain: "DSX Docs" }
+    ],
+    docLink: "#docs/dsx/facilities/dry-coolers"
+  },
+  {
+    id: "bess",
+    x: 42, y: 36,
+    label: "BESS — Battery Energy Storage",
+    category: "Power · Facilities",
+    title: "BESS — Battery Energy Storage System",
+    stackLayer: "DSX Facilities · Power",
+    intro: "BESS is required for all AI Factory deployment configurations — it stabilizes the spiky AI load and bridges to backup generation.",
+    body: `<p>AI workloads ramp from idle to nameplate in seconds, a behavior conventional grids aren't built for. BESS sits on the 34.5 kV switchgear bus and performs four roles:</p>
+           <ul class="tight">
+             <li><strong>AI Load Stabilization</strong> — ramp-rate control and sub-synchronous oscillation damping</li>
+             <li><strong>Abnormal Event Response</strong> — low-voltage ride-through, voltage &amp; frequency stability</li>
+             <li><strong>Bridge Power</strong> — source transitions and black-start capability</li>
+             <li><strong>Grid Dispatchability</strong> — peak shaving and congestion relief via DSX Flex</li>
+           </ul>
+           <p>Sizing is done case-by-case with OEMs, grid operators, and regulators — replacing the older 1:1 utility-replacement heuristic.</p>`,
+    stats: [
+      ["Required for", "All AI deployment configs"],
+      ["Bus", "34.5 kV MSG"],
+      ["Sizing", "Case-by-case w/ OEM + grid"],
+      ["Stack tie-in", "DSX Flex · DSX MaxQ"]
+    ],
+    bullets: [
+      "Ramp-rate control + sub-synchronous oscillation damping",
+      "Low-voltage ride-through, V/F stability",
+      "Source transition + black start capability",
+      "Peak shaving + congestion relief"
+    ],
+    extUrl: "https://docs.nvidia.com/datacenter/dsx/BESS-Self-Qualification-Guidelines.html",
+    extLabel: "BESS Self-Qualification Guidelines",
+    related: ["substation", "cooling-plant"],
+    pillar: "facilities",
+    furtherReading: [
+      { url: "https://docs.nvidia.com/dsx/home", label: "DSX Documentation Home", domain: "docs.nvidia.com" }
+    ],
+    docLink: "https://docs.nvidia.com/datacenter/dsx/BESS-Self-Qualification-Guidelines.html"
+  },
+  {
+    id: "cooling-plant",
+    x: 15, y: 64,
+    label: "Central Utility Building (CUB)",
+    category: "Cooling · Facilities",
+    title: "Central Utility Building (CUB)",
+    stackLayer: "DSX Facilities · Cooling",
+    intro: "The mechanical plant — chillers, pumps, and the chilled-water mains that feed every CDU in the data halls.",
+    body: `<p>Two CUBs sit at the east and west ends of the building, each containing the chillers, pumps, and heat-rejection equipment that produce and circulate facility water. Preliminary mechanical load is <strong>~115 MW</strong>, with paired outdoor <strong>dry coolers</strong> visible at both ends shedding heat to atmosphere without consuming water.</p>
+           <p>The CUB is fed from dedicated MV loops. Chillers run on a decoupled <strong>4.16 kV</strong> bus while the rest of the CUB (pumps, coolers, controls) runs on <strong>480 V</strong> — separated for serviceability. UPS is provided only for the Core portion of the CUB.</p>`,
+    stats: [
+      ["Preliminary load", "~115 MW"],
+      ["Chiller bus", "4.16 kV (decoupled)"],
+      ["CUB / Coolers bus", "480 V"],
+      ["UPS", "Core CUB only"]
+    ],
+    bullets: [
+      "Two CUBs (east + west) for redundancy",
+      "Paired with outdoor dry coolers — no evaporative water use",
+      "Feeds the building's facility-water mains",
+      "Decoupled 4.16 kV chillers and 480 V CUB/coolers"
+    ],
+    extUrl: "https://marketplace.nvidia.com/en-us/enterprise/",
+    extLabel: "Marketplace · Cooling",
+    related: ["dry-coolers", "cdus"],
+    pillar: "facilities",
+    furtherReading: [
+      { url: "https://docs.nvidia.com/dsx/home", label: "DSX Documentation Home", domain: "docs.nvidia.com" }
+    ],
+    docLink: "#docs/dsx/facilities/cooling-cub"
+  },
+  {
+    id: "cdus",
+    x: 36, y: 55,
+    label: "CDUs — Cooling Distribution",
+    category: "Cooling · Hardware",
+    title: "CDUs — Cooling Distribution Units",
+    stackLayer: "DSX Hardware · Cooling",
+    intro: "The bridge between the facility cooling loop and the rack — CDUs isolate fluids, regulate pressure, and deliver coolant directly to GPU cold plates.",
+    body: `<p>Each Deployment Unit contains dedicated cooling infrastructure including Coolant Distribution Units (CDUs) and secondary loops, plus CRAH units for any remaining air-cooled support equipment. CDUs take warm water from the CUB and deliver it as a clean, technical-grade secondary loop to the cold plates on each GPU tray — what makes hundred-kilowatt racks thermally feasible.</p>
+           <p>NVIDIA's CDU partner ecosystem on the Marketplace includes <strong>AVC, BOYD, Carrier, CoolIT, and Delta</strong> — across liquid-to-liquid and liquid-to-air categories, capacities from sub-1 MW up through medium-range 1–2.5 MW, and validation profiles spanning hydraulic, cold-start, flow-sensor accuracy, and thermal nominal-capacity testing.</p>`,
+    stats: [
+      ["Categories", "Liquid-to-liquid · Liquid-to-air"],
+      ["Capacity tiers", "< 1 MW · 1–2.5 MW"],
+      ["Partner vendors", "AVC, BOYD, Carrier, CoolIT, Delta"],
+      ["Status flags", "Sample Ready · MP Ready"]
+    ],
+    bullets: [
+      "Hydraulic test — constant DP and constant flow",
+      "Cold-start and flow-sensor accuracy validation",
+      "Thermal test — nominal capacity",
+      "Sourced via the NVIDIA Enterprise Marketplace CDU catalog"
+    ],
+    extUrl: "https://marketplace.nvidia.com/en-us/enterprise/",
+    extLabel: "Marketplace · CDU partners",
+    related: ["cooling-plant", "data-hall-compute"],
+    pillar: "hardware",
+    furtherReading: [
+      { url: "https://docs.nvidia.com/dsx/home", label: "DSX Documentation Home", domain: "docs.nvidia.com" }
+    ],
+    docLink: "#docs/dsx/hardware/cdu-partners"
+  },
+  {
+    id: "data-hall-compute",
+    x: 30, y: 66,
+    label: "Compute Data Hall",
+    category: "Hardware · Compute",
+    title: "Compute Data Hall",
+    stackLayer: "DSX Hardware · Data Plane",
+    intro: "Where tokens are produced — liquid-cooled GPU racks, NVLink scale-up within rack-scale domains, and Spectrum-X scale-out across halls.",
+    body: `<p>The GPU Compute building contains <strong>four data halls = 24 Deployment Units = 72–96 Scalable Units</strong>, drawing <strong>240 MW</strong> of IT load. A Scalable Unit is the smallest repeatable deployment pattern: <strong>1 Compute HAC (14 GPU racks) + 1 Support HAC</strong>.</p>
+           <p>Cabinet TDP scales from MGX Gen 1.1 (198 kW) through Gen 1.2 Vera Rubin NVL72 (330 kW) up to Gen 1.3 (660 kW with a paired Power Rack) as compute density rises over generations. Each DU is its own discrete availability zone at 99.9%.</p>`,
+    stats: [
+      ["Data Halls", "4 per building"],
+      ["Deployment Units", "24 (3–4 SUs each)"],
+      ["IT load", "240 MW @ 480 V"],
+      ["Cabinet TDP", "MGX 1.1 (198 kW) → 1.3 (660 kW)"]
+    ],
+    bullets: [
+      "E/W NVLink + Spectrum-X scale-out fabric",
+      "1 Compute HAC (14 GPU racks) + 1 Support HAC per SU",
+      "4-to-make-3 redundant power distribution",
+      "Direct-to-chip liquid cooling via CDUs"
+    ],
+    extUrl: "https://www.nvidia.com/en-us/data-center/dgx-superpod/",
+    extLabel: "DGX SuperPOD",
+    related: ["data-hall-storage", "cdus", "fiber"],
+    pillar: "hardware",
+    furtherReading: [
+      { url: "https://nvidianews.nvidia.com/news/nvidia-releases-vera-rubin-dsx-ai-factory-reference-design-and-omniverse-dsx-digital-twin-blueprint-with-broad-industry-support", label: "Vera Rubin DSX Reference Design (announcement)", domain: "nvidianews.nvidia.com" },
+      { url: "https://build.nvidia.com/nvidia/omniverse-dsx-blueprint-for-ai-factories", label: "Omniverse DSX Blueprint", domain: "build.nvidia.com" }
+    ],
+    docLink: "#docs/dsx/hardware/compute-data-hall"
+  },
+  {
+    id: "data-hall-storage",
+    x: 67, y: 66,
+    label: "Storage & Management Hall",
+    category: "Hardware · Storage",
+    title: "Storage & Management Hall",
+    stackLayer: "DSX Hardware · Control Plane",
+    intro: "Storage, control plane, and the out-of-band management network — the resilience and recovery side of the data plane.",
+    body: `<p>Adjacent to the Compute Halls, the Network Core blocks house storage racks, control nodes, the North-South network, the Tenant Access Network (TAN), and the Secure Management Network (SMN). The Main Points of Entry (MPOE) — where carrier fiber lands on the campus — also live here.</p>
+           <p>This is where DSX OS resilience surfaces — observability, automated break-fix ticketing, and NVIDIA Health Validation gating at intake. The Network CORE building takes 22 MW of total network load at 415 V, fully backed by UPS — the highest reliability tier on the campus.</p>`,
+    stats: [
+      ["Networks hosted", "TAN, SMN, N-S"],
+      ["Also hosts", "Storage, control nodes, MPOE"],
+      ["Core load", "22 MW @ 415 V w/ UPS"],
+      ["Availability", "99.999% (Bus A1)"]
+    ],
+    bullets: [
+      "Tenant Access &amp; Secure Management networks",
+      "Storage tiers and control nodes",
+      "MPOE — main carrier fiber entry",
+      "Backed by full UPS + 45 MW gen farm"
+    ],
+    extUrl: "https://www.nvidia.com/en-us/data-center/dgx-superpod/",
+    extLabel: "DGX SuperPOD",
+    related: ["data-hall-compute", "fiber"],
+    pillar: "hardware",
+    furtherReading: [
+      { url: "https://docs.nvidia.com/dsx/home", label: "DSX Documentation Home", domain: "docs.nvidia.com" }
+    ],
+    docLink: "#docs/dsx/hardware/network-core"
+  },
+  {
+    id: "fiber",
+    x: 50, y: 70,
+    label: "Cluster Interconnect (Fiber Spine)",
+    category: "Network · Hardware",
+    title: "CIN Spine & Campus Fiber",
+    stackLayer: "DSX Hardware · East-West Network",
+    intro: "The east-west spine that fuses the four data halls into a single training cluster — and the diverse-path fiber that connects the campus to the outside world.",
+    body: `<p>At the center of the building, the Cluster Interconnect Network (CIN) spine racks knit every Compute Hall into one cluster. Every data hall is positioned to keep its optical links to the spine within budget — the building geometry follows from this room. The CIN scales in stairstep increments of 1, 10, 32, 64, 128 SU.</p>
+           <p>Outside the building, diverse-path carrier fiber lands at the MPOE in the Network Core. Inter-DSX cross-connects link this campus to other DSX deployments — DSX-IAD (DSGW, 32× VR, in construction), DSX-RNO (32× VPU, Faynman 2027), and DSX-LAS (32× Faynman 2028) — all over the same fiber spine.</p>`,
+    stats: [
+      ["Function", "E-W (CIN) spine racks"],
+      ["Scale steps", "1 / 10 / 32 / 64 / 128 SU"],
+      ["External fiber", "Diverse-path carrier"],
+      ["Cross-connects", "Inter-DSX site links"]
+    ],
+    bullets: [
+      "Centrally located so all halls reach within optical budget",
+      "Distance-sensitive — drives the building geometry",
+      "Diverse off-campus carrier routes",
+      "Inter-DSX fiber for federated training"
+    ],
+    extUrl: "https://www.nvidia.com/en-us/networking/spectrum-x/",
+    extLabel: "NVIDIA Spectrum-X",
+    related: ["data-hall-compute", "data-hall-storage"],
+    pillar: "hardware",
+    furtherReading: [
+      { url: "https://build.nvidia.com/nvidia/omniverse-dsx-blueprint-for-ai-factories", label: "Omniverse DSX Blueprint (digital twin)", domain: "build.nvidia.com" }
+    ],
+    docLink: "#docs/dsx/hardware/cin-spine"
+  },
+  {
+    id: "operations",
+    x: 50, y: 88,
+    label: "Operations & Site Entry",
+    category: "Operations · Site",
+    title: "Operations Center & Site Entry",
+    stackLayer: "DSX Facilities · Land · Operations",
+    intro: "The human face of the campus — Primary Entry, the Security Guardhouse, parking, and the operations control room.",
+    body: `<p>The south side of the campus brings together the Primary Site Entrance, Security Guardhouse, parking lot, and the building's Entry &amp; Offices block. This is where badging happens, where vendor tickets are triaged, and where the NOC/SOC monitors the campus 24/7.</p>
+           <p>Site dimensions: <strong>2,967' × 2,110' / 143.72 acres</strong>, with the data hall building at <strong>816,606 SF single-story</strong>. A Secondary Entrance on the north side handles substation and gas yard logistics so they don't cross the operational traffic flow at the primary gate.</p>`,
+    stats: [
+      ["Site", "143.72 acres (2,967' × 2,110')"],
+      ["Building", "816,606 SF · Single Story"],
+      ["Entries", "Primary (S) + Secondary (N)"],
+      ["Operations", "24/7 NOC/SOC in Block A"]
+    ],
+    bullets: [
+      "Security guardhouse and visitor badging at primary gate",
+      "Parking sized for operations + construction phasing",
+      "Block A houses NOC/SOC and site engineering offices",
+      "Confidential Computing + multi-tenancy on the DSX OS side"
+    ],
+    extUrl: "https://docs.nvidia.com/",
+    extLabel: "docs.nvidia.com",
+    related: ["substation", "data-hall-storage"],
+    pillar: "software",
+    furtherReading: [
+      { url: "https://build.nvidia.com/nvidia/omniverse-dsx-blueprint-for-ai-factories", label: "Omniverse DSX Blueprint (digital twin)", domain: "build.nvidia.com" }
+    ],
+    docLink: "#docs/dsx/facilities/land-operations"
+  }
+];
+
+/* ---------- Render hotspots ---------- */
+const stage = document.getElementById("stage");
+HOTSPOTS.forEach(h => {
+  const btn = document.createElement("button");
+  btn.className = "hotspot";
+  btn.style.left = h.x + "%";
+  btn.style.top  = h.y + "%";
+  btn.setAttribute("aria-label", h.label);
+  btn.dataset.id = h.id;
+  btn.innerHTML = `
+    <span class="pulse"></span>
+    <span class="pin"></span>
+    <span class="label">${h.label}</span>
+  `;
+  btn.addEventListener("click", () => openPanel(h, btn));
+  stage.appendChild(btn);
+});
+
+
+/* ---------- Side panel ---------- */
+const overlay = document.getElementById("overlay");
+const panel   = document.getElementById("panel");
+const pCat    = document.getElementById("p-category");
+const pTitle  = document.getElementById("p-title");
+const pMarker = document.getElementById("p-marker");
+const pBody   = document.getElementById("p-body");
+const pClose  = document.getElementById("p-close");
+
+function openPanel(h, btn) {
+  document.querySelectorAll(".hotspot.active").forEach(el => el.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+
+  pCat.textContent   = h.category;
+  pTitle.textContent = h.title;
+  if (pMarker) pMarker.style.display = "none"; // not used in 8-pin layout
+
+  const stats = h.stats.map(([k, v]) =>
+    `<div class="stat"><div class="stat-label">${k}</div><div class="stat-val">${v}</div></div>`
+  ).join("");
+
+  const bullets = (h.bullets || []).map(b => `<li>${b}</li>`).join("");
+
+  // Build related-component chips
+  const related = (h.related || [])
+    .map(rid => HOTSPOTS.find(x => x.id === rid))
+    .filter(Boolean);
+  const relChips = related.length
+    ? `<div class="panel-section">
+         <h4>Related components</h4>
+         <div class="rel-chips">${
+           related.map(r => `<button class="rel-chip" data-target="${r.id}">${r.label}</button>`).join("")
+         }</div>
+       </div>`
+    : "";
+
+  // Pillar anchor for the stack-pill link
+  const pillarId = h.pillar ? `pillar-${h.pillar}` : "";
+  const stackPill = pillarId
+    ? `<a class="stack-pill" href="#${pillarId}" data-pillar="${pillarId}">${h.stackLayer}</a>`
+    : `<div class="stack-pill">${h.stackLayer}</div>`;
+
+  // External CTA — opens in new tab
+  const extUrl = h.extUrl || h.docLink || "#";
+  const extLabel = h.extLabel || "Learn more on NVIDIA Docs";
+  const isExternal = /^https?:/.test(extUrl);
+  const extAttrs = isExternal ? ' target="_blank" rel="noopener"' : "";
+
+  // "Further reading" — additional curated links for this pin
+  const fr = (h.furtherReading || []).filter(it => it && it.url);
+  const frBlock = fr.length
+    ? `<div class="panel-section">
+         <h4>Further reading</h4>
+         <div class="further-reading">${
+           fr.map(it => `<a href="${it.url}" target="_blank" rel="noopener">${it.label}<span class="fr-domain">${it.domain || ""}</span></a>`).join("")
+         }</div>
+       </div>`
+    : "";
+
+  pBody.innerHTML = `
+    <p>${h.intro}</p>
+    ${stackPill}
+    ${h.body}
+    <div class="panel-section">
+      <h4>Key specs</h4>
+      <div class="stat-grid">${stats}</div>
+    </div>
+    ${bullets ? `<div class="panel-section">
+      <h4>What it includes</h4>
+      <ul class="tight">${bullets}</ul>
+    </div>` : ""}
+    <a class="learn-more" href="${extUrl}"${extAttrs}>${extLabel}</a>
+    ${frBlock}
+    ${relChips}
+    <div class="source-footer">
+      Sources: <em>NVIDIA DSX Facilities Infrastructure Design Guide v1.0</em> · March 12, 2026 &nbsp;·&nbsp; <em>Jacobs RAM Study</em> (D4075100_RAM01) · May 15, 2026.<br />
+      Supplemental design references on <a href="https://partners.nvidia.com/" target="_blank" rel="noopener">NVOnline (partners.nvidia.com)</a>. Replace deep links before publishing to docs.nvidia.com.
+    </div>
+  `;
+
+  // Wire related-chip clicks → switch panels
+  pBody.querySelectorAll(".rel-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      const targetId = chip.dataset.target;
+      const target = HOTSPOTS.find(x => x.id === targetId);
+      const targetBtn = document.querySelector(`.hotspot[data-id="${targetId}"]`);
+      if (target) openPanel(target, targetBtn);
+    });
+  });
+
+  // Wire stack-pill click → smooth-scroll to the pillar card and pulse it
+  const pillEl = pBody.querySelector("a.stack-pill");
+  if (pillEl) {
+    pillEl.addEventListener("click", e => {
+      e.preventDefault();
+      const anchor = document.getElementById(pillEl.dataset.pillar);
+      if (!anchor) return;
+      closePanel();
+      anchor.scrollIntoView({ behavior: "smooth", block: "center" });
+      // brief highlight
+      anchor.style.transition = "box-shadow 0.3s ease";
+      anchor.style.boxShadow = "0 0 0 3px var(--nv-green)";
+      setTimeout(() => { anchor.style.boxShadow = ""; }, 1400);
+    });
+  }
+
+  panel.classList.add("open");
+  overlay.classList.add("open");
+  panel.setAttribute("aria-hidden", "false");
+}
+
+function closePanel() {
+  panel.classList.remove("open");
+  overlay.classList.remove("open");
+  panel.setAttribute("aria-hidden", "true");
+  document.querySelectorAll(".hotspot.active").forEach(el => el.classList.remove("active"));
+}
+
+overlay.addEventListener("click", closePanel);
+pClose.addEventListener("click", closePanel);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closePanel(); });
+
+/* ?open=<id> for deep linking */
+const params = new URLSearchParams(location.search);
+const openId = params.get("open");
+if (openId) {
+  const h = HOTSPOTS.find(x => x.id === openId);
+  if (h) openPanel(h, document.querySelector(`.hotspot[data-id="${openId}"]`));
+}
+</script>
+
+</body>
+</html>
