@@ -391,6 +391,68 @@
     margin-top: 2px;
   }
 
+  /* Inline partner table inside pin modals (used by CDU pin) */
+  .cdu-table-wrap {
+    margin: 14px 0 4px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: auto;
+    max-height: 320px;
+    background: #fff;
+  }
+  .cdu-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .cdu-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--bg-2);
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 10px;
+    font-weight: 600;
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--line);
+    z-index: 1;
+  }
+  .cdu-table tbody td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eef1ee;
+    color: var(--ink);
+    vertical-align: top;
+  }
+  .cdu-table tbody tr:last-child td { border-bottom: none; }
+  .cdu-table tbody tr:hover { background: #f6faef; }
+  .cdu-table td.cap { font-weight: 500; white-space: nowrap; }
+  .cdu-table td.vendor { font-weight: 600; white-space: nowrap; }
+  .cdu-table .status {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 2px 7px;
+    border-radius: 3px;
+  }
+  .cdu-table .status.mp { background: #e6f4d4; color: var(--nv-green-dark); }
+  .cdu-table .status.sample { background: #eaeefb; color: #1a3fce; }
+  .cdu-table .status.none { color: var(--ink-3); font-size: 11px; }
+  .cdu-tests {
+    font-size: 11px;
+    color: var(--ink-2);
+    line-height: 1.4;
+  }
+  .cdu-note {
+    font-size: 12px;
+    color: var(--ink-3);
+    margin: 8px 0 0;
+    font-style: italic;
+  }
+
   .stack-pill {
     display: inline-flex;
     align-items: center;
@@ -700,7 +762,7 @@
   <div class="site-stats">
     <div class="s"><div class="lbl">Site</div><div class="val">2,967' × 2,110' &middot; 143.72 acres</div></div>
     <div class="s"><div class="lbl">Building</div><div class="val">816,606 SF &middot; Single Story</div></div>
-    <div class="s"><div class="lbl">IT Load</div><div class="val">240 MW (~360 MW total)</div></div>
+    <div class="s"><div class="lbl">IT Load</div><div class="val">250 MW AI Factory (reference scale)</div></div>
     <div class="s"><div class="lbl">Scale</div><div class="val">Up to 96 Scalable Units</div></div>
   </div>
 </section>
@@ -761,7 +823,7 @@
       <div class="stack-num">Pillar 01</div>
       <h3>DSX Hardware</h3>
       <p class="pillar-sub">Racks and Network</p>
-      <p>Compute (GPU racks — e.g. Vera Rubin), East-West network (Spectrum-X), North-South network, and storage. Cabinet TDP scales from MGX Gen 1.1 (198 kW) through Gen 1.3 (up to 660 kW).</p>
+      <p>Compute (GPU racks — e.g. Vera Rubin), East-West network (Spectrum-X), North-South network, and storage. Cabinet TDP scales from MGX Gen 1.1 (198 kW) through Gen 1.2 Vera Rubin NVL72 (330 kW) up to Gen 1.3 (630 kW single rack, 660 kW with paired Power Rack).</p>
     </div>
     <div class="stack-card focus" id="pillar-facilities">
       <div class="stack-num">Pillar 02 — In focus</div>
@@ -875,17 +937,17 @@ const HOTSPOTS = [
     stackLayer: "DSX Facilities · Cooling",
     intro: "Air-cooled heat exchangers paired with the CUBs — they reject all of the campus's thermal load to atmosphere without consuming a drop of water.",
     body: `<p>Dry coolers are positioned at the far east and far west of the site, directly north of each Central Utility Building. Warm facility water from the chillers flows through finned-tube heat exchangers; fans pull ambient air across the fins, dumping heat to the air. <strong>No evaporative water use</strong> — a critical siting choice for water-constrained regions.</p>
-           <p>During a utility outage, dry coolers (like the 4.16 kV chillers) shut down because they have no UPS support on the GPU side. The chilled-water thermal mass in the loop is sized to maintain Core operating temperatures for the <strong>~2 minutes</strong> it takes backup generation to bring chiller controllers back online and initiate an automatic restart sequence.</p>`,
+           <p>Dry coolers run on <strong>480 V</strong> alongside the rest of the CUB pumps and controls — only the chillers themselves run on the decoupled 4.16 kV bus. On the GPU side, the cooling plant is not UPS-backed: during a utility outage it relies on the chilled-water loop's thermal mass to hold temperature until backup generation comes online and the system auto-restarts. The Core side of the CUB is the only portion backed by UPS.</p>`,
     stats: [
       ["Function", "Air-side heat rejection"],
       ["Water use", "None (dry, finned-tube)"],
-      ["Location", "Far east + far west pads"],
-      ["Restart", "Auto after gen restores 4.16 kV"]
+      ["Bus", "480 V"],
+      ["UPS", "Core CUB only (not GPU side)"]
     ],
     bullets: [
       "Paired east + west for redundancy",
       "Eliminates water consumption vs. cooling towers",
-      "Loop thermal mass bridges the ~2-min gen-start gap",
+      "Loop thermal mass bridges to backup-gen restart",
       "Not UPS-backed on GPU side; auto-restart on Core side"
     ],
     extUrl: "https://docs.nvidia.com/dsx/home",
@@ -974,18 +1036,50 @@ const HOTSPOTS = [
     stackLayer: "DSX Hardware · Cooling",
     intro: "The bridge between the facility cooling loop and the rack — CDUs isolate fluids, regulate pressure, and deliver coolant directly to GPU cold plates.",
     body: `<p>Each Deployment Unit contains dedicated cooling infrastructure including Coolant Distribution Units (CDUs) and secondary loops, plus CRAH units for any remaining air-cooled support equipment. CDUs take warm water from the CUB and deliver it as a clean, technical-grade secondary loop to the cold plates on each GPU tray — what makes hundred-kilowatt racks thermally feasible.</p>
-           <p>NVIDIA's CDU partner ecosystem on the Marketplace includes <strong>AVC, BOYD, Carrier, CoolIT, and Delta</strong> — across liquid-to-liquid and liquid-to-air categories, capacities from sub-1 MW up through medium-range 1–2.5 MW, and validation profiles spanning hydraulic, cold-start, flow-sensor accuracy, and thermal nominal-capacity testing.</p>`,
+           <p>The DSX reference design specifies a CDU cooling capacity of <strong>≥ 2.3 MW @ 4 °C ATD</strong> (Approach Temperature Differential), <strong>≥ 1.5 LPM/kW</strong> design flow on the TCS loop, <strong>PG25</strong> secondary-side fluid, and <strong>N+1 pump redundancy</strong> at the deployment-unit scale. Power feeds are dual-sourced at 415 V / 480 V (with 800 VDC pathway in the future design).</p>
+           <p>NVIDIA's CDU partner ecosystem on the Enterprise Marketplace spans <strong>11 vendors</strong> across both <strong>liquid-to-liquid</strong> and <strong>liquid-to-air</strong> categories, with capacities from <strong>72 kW</strong> (rack-scale liquid-to-air) up to <strong>2.3 MW</strong> (deployment-unit scale). Validation profiles cover up to ten tests per product: hydraulic constant-DP and constant-flow, cold start, flow-sensor accuracy, thermal low-load and nominal-capacity, pump failover, fan failover, group control, and pumping capacity.</p>
+           <div class="cdu-table-wrap">
+             <table class="cdu-table" aria-label="DSX CDU partner products">
+               <thead>
+                 <tr>
+                   <th>Vendor</th><th>Model</th><th>Capacity @ 4 °C ATD</th><th>Flow @ 35 psi</th><th>Validation tests</th><th>Status</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 <tr><td class="vendor">AVC</td><td>CDU135-LTA-RW</td><td class="cap">72 kW</td><td>130 LPM</td><td class="cdu-tests">10 tests (full suite incl. fan &amp; pump failover, group control)</td><td><span class="status mp">MP Ready</span></td></tr>
+                 <tr><td class="vendor">AVC</td><td>CDU1000-LTL-RW</td><td class="cap">1.2 MW</td><td>1,600 LPM</td><td class="cdu-tests">9 tests (no fan failover)</td><td><span class="status sample">Sample Ready</span></td></tr>
+                 <tr><td class="vendor">BOYD</td><td>ROL2300</td><td class="cap">1.1 MW</td><td>2,600 LPM</td><td class="cdu-tests">7 tests (hydraulic, cold start, thermal, pump failover, pumping capacity)</td><td><span class="status mp">MP Ready</span></td></tr>
+                 <tr><td class="vendor">Carrier</td><td>65LL</td><td class="cap">1.2 MW</td><td>2,500 LPM</td><td class="cdu-tests">9 tests (no fan failover)</td><td><span class="status sample">Sample Ready</span></td></tr>
+                 <tr><td class="vendor">CoolIT</td><td>AHx180</td><td class="cap">130 kW</td><td>300 LPM</td><td class="cdu-tests">7 tests (no failover/group control)</td><td><span class="status none">—</span></td></tr>
+                 <tr><td class="vendor">CoolIT</td><td>CHx1500</td><td class="cap">1.5 MW</td><td>1,950 LPM</td><td class="cdu-tests">7 tests (no flow-sensor accuracy / group control)</td><td><span class="status none">—</span></td></tr>
+                 <tr><td class="vendor">Delta</td><td>RDF106CDT5192</td><td class="cap">1.0 MW</td><td>1,500 LPM</td><td class="cdu-tests">8 tests (no fan failover / group control)</td><td><span class="status mp">MP Ready</span></td></tr>
+                 <tr><td class="vendor">LITEON</td><td>LC-LL-WCDU-6011(S)</td><td class="cap">380 kW</td><td>600 LPM</td><td class="cdu-tests">8 tests (no fan failover / group control)</td><td><span class="status sample">Sample Ready</span></td></tr>
+                 <tr><td class="vendor">Motivair</td><td>MHDU5910</td><td class="cap">103 kW</td><td>70 LPM</td><td class="cdu-tests">6 tests (hydraulic, cold start, thermal, pumping capacity)</td><td><span class="status mp">MP Ready</span></td></tr>
+                 <tr><td class="vendor">Motivair</td><td>MCDU50</td><td class="cap">1.7 MW</td><td>1,136 LPM</td><td class="cdu-tests">5 tests (hydraulic, thermal, pumping capacity)</td><td><span class="status mp">MP Ready</span></td></tr>
+                 <tr><td class="vendor">Motivair</td><td>MCDU55</td><td class="cap">1.3 MW</td><td>—</td><td class="cdu-tests">8 tests (no fan failover / group control)</td><td><span class="status none">—</span></td></tr>
+                 <tr><td class="vendor">Nidec</td><td>L10P150-xx-IR03</td><td class="cap">940 kW</td><td>1,025 LPM</td><td class="cdu-tests">9 tests (no fan failover)</td><td><span class="status mp">MP Ready</span></td></tr>
+                 <tr><td class="vendor">Stulz</td><td>SCS15102Wu</td><td class="cap">940 kW</td><td>1,800 LPM</td><td class="cdu-tests">4 tests (hydraulic constant flow, thermal, pumping capacity)</td><td><span class="status none">—</span></td></tr>
+                 <tr><td class="vendor">Supermicro</td><td>Supermicro</td><td class="cap">2.3 MW</td><td>2,600 LPM</td><td class="cdu-tests">9 tests (no fan failover)</td><td><span class="status none">—</span></td></tr>
+                 <tr><td class="vendor">Vertiv</td><td>XDU1350</td><td class="cap">1.3 MW</td><td>1,550 LPM</td><td class="cdu-tests">9 tests (no fan failover)</td><td><span class="status mp">MP Ready</span></td></tr>
+               </tbody>
+             </table>
+           </div>
+           <p class="cdu-note">Wetted materials reported as compatible where specified by the vendor. Source: NVIDIA Enterprise Marketplace · AI Factory DSX Infrastructure product catalog.</p>`,
     stats: [
+      ["Reference spec", "≥ 2.3 MW @ 4 °C ATD"],
+      ["TCS design flow", "≥ 1.5 LPM/kW (ΔT 10 °C)"],
       ["Categories", "Liquid-to-liquid · Liquid-to-air"],
-      ["Capacity tiers", "< 1 MW · 1–2.5 MW"],
-      ["Partner vendors", "AVC, BOYD, Carrier, CoolIT, Delta"],
-      ["Status flags", "Sample Ready · MP Ready"]
+      ["Capacity range", "72 kW → 2.3 MW"],
+      ["Partner vendors", "11 (15 product variants)"],
+      ["Redundancy", "N+1 at DU scale · sensors redundant"]
     ],
     bullets: [
       "Hydraulic test — constant DP and constant flow",
-      "Cold-start and flow-sensor accuracy validation",
-      "Thermal test — nominal capacity",
-      "Sourced via the NVIDIA Enterprise Marketplace CDU catalog"
+      "Cold-start test and flow-sensor accuracy",
+      "Thermal test — both low-load and nominal-capacity",
+      "Pump failover, fan failover, group control",
+      "Pumping capacity validation",
+      "Supply-chain gating: Sample Ready → MP Ready"
     ],
     extUrl: "https://marketplace.nvidia.com/en-us/enterprise/",
     extLabel: "Marketplace · CDU partners",
@@ -1004,12 +1098,13 @@ const HOTSPOTS = [
     title: "Compute Data Hall",
     stackLayer: "DSX Hardware · Data Plane",
     intro: "Where tokens are produced — liquid-cooled GPU racks, NVLink scale-up within rack-scale domains, and Spectrum-X scale-out across halls.",
-    body: `<p>The GPU Compute building contains <strong>four data halls = 24 Deployment Units = 72–96 Scalable Units</strong>, drawing <strong>240 MW</strong> of IT load. A Scalable Unit is the smallest repeatable deployment pattern: <strong>1 Compute HAC (14 GPU racks) + 1 Support HAC</strong>.</p>
-           <p>Cabinet TDP scales from MGX Gen 1.1 (198 kW) through Gen 1.2 Vera Rubin NVL72 (330 kW) up to Gen 1.3 (660 kW with a paired Power Rack) as compute density rises over generations. Each DU is its own discrete availability zone at 99.9%.</p>`,
+    body: `<p>The GPU Compute building contains <strong>four data halls = 24 Deployment Units = 72–96 Scalable Units</strong>, drawing <strong>240 MW</strong> of IT load (the Network CORE building adds another <strong>22 MW</strong> separately). A Scalable Unit is the smallest repeatable deployment pattern: <strong>1 Compute HAC (14 GPU racks) + 1 Support HAC</strong>, with a <strong>4.16 MVA</strong> power budget per SU (3-phase 480 V / 5000 A / N+1).</p>
+           <p>Cabinet TDP scales from MGX Gen 1.1 (198 kW) through Gen 1.2 Vera Rubin NVL72 (330 kW) up to Gen 1.3 (630 kW single rack, 660 kW with a paired Power Rack) as compute density rises over generations. GPU racks distribute at 480 V; network and support racks at 415 V. Each DU is a discrete availability zone designed for 99.9%.</p>`,
     stats: [
       ["Data Halls", "4 per building"],
       ["Deployment Units", "24 (3–4 SUs each)"],
-      ["IT load", "240 MW @ 480 V"],
+      ["IT load", "240 MW (GPU 480 V + support 415 V)"],
+      ["SU power budget", "4.16 MVA (480 V / 5000 A / N+1)"],
       ["Cabinet TDP", "MGX 1.1 (198 kW) → 1.3 (660 kW)"]
     ],
     bullets: [
