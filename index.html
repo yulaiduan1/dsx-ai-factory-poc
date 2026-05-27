@@ -873,19 +873,18 @@ const HOTSPOTS = [
     title: "Grid Substation & Utility Interconnect",
     stackLayer: "DSX Facilities · Power",
     intro: "The campus's primary handshake with the grid — stepping >100 kV utility transmission down through a 34.5 kV medium-voltage backbone.",
-    body: `<p>The Service Substation lands utility lines above <strong>100 kV</strong> and transforms them through HV→34.5 kV transformers into the campus's medium-voltage backbone. From here a 34.5 kV AIS/GIS Switchgear bus distributes power across the site.</p>
-           <p>Two main switchgear buses serve different reliability tiers: <strong>Bus A1</strong> feeds the Network CORE at 99.999% availability, and <strong>Bus A2</strong> feeds the GPU Compute building at 99.9%. Backup generators and BESS share the same 34.5 kV bus, so the substation is the integration point for flexible power and DSX Flex grid services.</p>`,
+    body: `<p>Two buses in the same 34.5 kV AIS/GIS switchgear distribute power across the site. The Service Substation lands utility lines above <strong>100 kV</strong> and transforms them through HV→34.5 kV transformers into the campus's medium-voltage backbone, feeding those buses.</p>
+           <p>These buses serve different reliability tiers: <strong>Bus A1</strong> feeds the Network CORE at 99.999% availability, and <strong>Bus A2</strong> feeds the GPU Compute building at 99.9%. On-premise generation (if utilized) and BESS share the same 34.5 kV bus, so the substation is the integration point for flexible power and DSX Flex grid services.</p>`,
     stats: [
       ["Utility in", "100 kV+ transmission"],
-      ["Backbone", "34.5 kV AIS/GIS"],
       ["Switchgear", "34.5 kV, 2,500 A, 40 kA"],
-      ["Bus A1 / A2", "99.999% / 99.9%"]
+      ["Bus A1 / A2 availability", "99.999% / 99.9%"]
     ],
     bullets: [
       "HV breaker scheme + HV/34.5 kV transformers",
-      "Two main switchgear buses — Core vs GPU Compute",
-      "Single integration point for utility, Backup Gen, and BESS",
-      "Coordinated with utility grid operator via DSX Exchange"
+      "Two buses in the same switchgear — Core vs GPU Compute",
+      "Single integration point for utility, on-premise generation (if utilized), and BESS",
+      "Coordinated with utility grid operator via DSX Flex"
     ],
     extUrl: "https://www.nvidia.com/en-us/data-center/",
     extLabel: "NVIDIA Data Center",
@@ -1098,19 +1097,20 @@ const HOTSPOTS = [
     title: "Compute Data Hall",
     stackLayer: "DSX Hardware · Data Plane",
     intro: "Where tokens are produced — liquid-cooled GPU racks, NVLink scale-up within rack-scale domains, and Spectrum-X scale-out across halls.",
-    body: `<p>The GPU Compute building contains <strong>four data halls = 24 Deployment Units = 72–96 Scalable Units</strong>, drawing <strong>240 MW</strong> of IT load (the Network CORE building adds another <strong>22 MW</strong> separately). A Scalable Unit is the smallest repeatable deployment pattern: <strong>1 Compute HAC (14 GPU racks) + 1 Support HAC</strong>, with a <strong>4.16 MVA</strong> power budget per SU (3-phase 480 V / 5000 A / N+1).</p>
+    body: `<p>The GPU Compute building contains <strong>four data halls supporting up to 64 Scalable Units</strong> (250 MW reference form factor — 896 GPU racks, 64,512 GPUs), drawing <strong>193 MW</strong> of IT load at MaxQ (200 kW per GPU rack). The Network CORE building adds another <strong>~12 MW</strong> (6% core load), bringing SU + Core total to <strong>205 MW</strong>. A Scalable Unit is the smallest repeatable deployment pattern: <strong>1 Compute HAC (14 GPU racks) + 1 Support HAC</strong>, with a <strong>4.16 MVA</strong> power budget per SU (3-phase 480 V / 5000 A / N+1).</p>
            <p>Cabinet TDP scales from MGX Gen 1.1 (198 kW) through Gen 1.2 Vera Rubin NVL72 (330 kW) up to Gen 1.3 (630 kW single rack, 660 kW with a paired Power Rack) as compute density rises over generations. GPU racks distribute at 480 V; network and support racks at 415 V. Each DU is a discrete availability zone designed for 99.9%.</p>`,
     stats: [
       ["Data Halls", "4 per building"],
-      ["Deployment Units", "24 (3–4 SUs each)"],
-      ["IT load", "240 MW (GPU 480 V + support 415 V)"],
+      ["Scalable Units", "Up to 64 (14 GPU racks / SU)"],
+      ["IT load", "193 MW @ MaxQ (200 kW/rack)"],
+      ["SU + Core total", "205 MW (incl. 6% core)"],
       ["SU power budget", "4.16 MVA (480 V / 5000 A / N+1)"],
       ["Cabinet TDP", "MGX 1.1 (198 kW) → 1.3 (660 kW)"]
     ],
     bullets: [
       "E/W NVLink + Spectrum-X scale-out fabric",
       "1 Compute HAC (14 GPU racks) + 1 Support HAC per SU",
-      "4-to-make-3 redundant power distribution",
+      "4-to-make-3 redundant power distributed",
       "Direct-to-chip liquid cooling via CDUs"
     ],
     extUrl: "https://www.nvidia.com/en-us/data-center/dgx-superpod/",
