@@ -823,7 +823,7 @@
       <div class="stack-num">Pillar 01</div>
       <h3>DSX Hardware</h3>
       <p class="pillar-sub">Racks and Network</p>
-      <p>Compute (GPU racks — e.g. Vera Rubin), East-West network (Spectrum-X), North-South network, and storage. Cabinet TDP scales from MGX Gen 1.1 (198 kW) through Gen 1.2 Vera Rubin NVL72 (330 kW) up to Gen 1.3 (630 kW single rack, 660 kW with paired Power Rack).</p>
+      <p>Compute (GPU racks — e.g. Vera Rubin), East-West network (Spectrum-X), North-South network, and storage. Cabinet TDP scales from MGX Gen 1.1 (198 kW) through Gen 1.2 Vera Rubin NVL72 (330 kW) up to Gen 1.3 (Future GPU Product, 630 kW single rack, 660 kW with paired Power Rack).</p>
     </div>
     <div class="stack-card focus" id="pillar-facilities">
       <div class="stack-num">Pillar 02 — In focus</div>
@@ -1035,8 +1035,7 @@ const HOTSPOTS = [
     stackLayer: "DSX Hardware · Cooling",
     intro: "The bridge between the facility cooling loop and the rack — CDUs isolate fluids, regulate pressure, and deliver coolant directly to GPU cold plates.",
     body: `<p>Each Deployment Unit contains dedicated cooling infrastructure including Coolant Distribution Units (CDUs) and secondary loops, plus CRAH units for any remaining air-cooled support equipment. CDUs take warm water from the CUB and deliver it as a clean, technical-grade secondary loop to the cold plates on each GPU tray — what makes hundred-kilowatt racks thermally feasible.</p>
-           <p>The DSX reference design specifies a CDU cooling capacity of <strong>≥ 2.3 MW @ 4 °C ATD</strong> (Approach Temperature Differential), <strong>≥ 1.5 LPM/kW</strong> design flow on the TCS loop, <strong>PG25</strong> secondary-side fluid, and <strong>N+1 pump redundancy</strong> at the deployment-unit scale. Power feeds are dual-sourced at 415 V / 480 V (with 800 VDC pathway in the future design).</p>
-           <p>NVIDIA's CDU partner ecosystem on the Enterprise Marketplace spans <strong>11 vendors</strong> across both <strong>liquid-to-liquid</strong> and <strong>liquid-to-air</strong> categories, with capacities from <strong>72 kW</strong> (rack-scale liquid-to-air) up to <strong>2.3 MW</strong> (deployment-unit scale). Validation profiles cover up to ten tests per product: hydraulic constant-DP and constant-flow, cold start, flow-sensor accuracy, thermal low-load and nominal-capacity, pump failover, fan failover, group control, and pumping capacity.</p>
+           <p>NVIDIA's CDU partner ecosystem on the Enterprise Marketplace spans <strong>11 vendors</strong> — <strong>AVC, BOYD, Carrier, CoolIT, Delta, LITEON, Motivair, Nidec, Stulz, Supermicro, and Vertiv</strong> — across both <strong>liquid-to-liquid</strong> and <strong>liquid-to-air</strong> categories, with capacities from <strong>72 kW</strong> (rack-scale liquid-to-air) up to <strong>2.3 MW</strong> (deployment-unit scale). Validation profiles cover up to ten tests per product: hydraulic constant-DP and constant-flow, cold start, flow-sensor accuracy, thermal low-load and nominal-capacity, pump failover, fan failover, group control, and pumping capacity.</p>
            <div class="cdu-table-wrap">
              <table class="cdu-table" aria-label="DSX CDU partner products">
                <thead>
@@ -1098,7 +1097,7 @@ const HOTSPOTS = [
     stackLayer: "DSX Hardware · Data Plane",
     intro: "Where tokens are produced — liquid-cooled GPU racks, NVLink scale-up within rack-scale domains, and Spectrum-X scale-out across halls.",
     body: `<p>The GPU Compute building contains <strong>four data halls supporting up to 64 Scalable Units</strong> (250 MW reference form factor — 896 GPU racks, 64,512 GPUs), drawing <strong>193 MW</strong> of IT load at MaxQ (200 kW per GPU rack). The Network CORE building adds another <strong>~12 MW</strong> (6% core load), bringing SU + Core total to <strong>205 MW</strong>. A Scalable Unit is the smallest repeatable deployment pattern: <strong>1 Compute HAC (14 GPU racks) + 1 Support HAC</strong>, with a <strong>4.16 MVA</strong> power budget per SU (3-phase 480 V / 5000 A / N+1).</p>
-           <p>Cabinet TDP scales from MGX Gen 1.1 (198 kW) through Gen 1.2 Vera Rubin NVL72 (330 kW) up to Gen 1.3 (630 kW single rack, 660 kW with a paired Power Rack) as compute density rises over generations. GPU racks distribute at 480 V; network and support racks at 415 V. Each DU is a discrete availability zone designed for 99.9%.</p>`,
+           <p>Cabinet TDP scales from MGX Gen 1.1 (198 kW) through Gen 1.2 Vera Rubin NVL72 (330 kW) up to Gen 1.3 (Future GPU Product, 630 kW single rack, 660 kW with a paired Power Rack) as compute density rises over generations. GPU racks distribute at 480 V; network and support racks at 415 V. Each DU is a discrete availability zone designed for 99.9%.</p>`,
     stats: [
       ["Data Halls", "4 per building"],
       ["Scalable Units", "Up to 64 (14 GPU racks / SU)"],
@@ -1163,7 +1162,7 @@ const HOTSPOTS = [
     stackLayer: "DSX Hardware · East-West Network",
     intro: "The east-west spine that fuses the four data halls into a single training cluster — and the diverse-path fiber that connects the campus to the outside world.",
     body: `<p>At the center of the building, the Cluster Interconnect Network (CIN) spine racks knit every Compute Hall into one cluster. Every data hall is positioned to keep its optical links to the spine within budget — the building geometry follows from this room. The CIN scales in stairstep increments of 1, 10, 32, 64, 128 SU.</p>
-           <p>Outside the building, diverse-path carrier fiber lands at the MPOE in the Network Core. Inter-DSX cross-connects link this campus to other DSX deployments — DSX-IAD (DSGW, 32× VR, in construction), DSX-RNO (32× VPU, Faynman 2027), and DSX-LAS (32× Faynman 2028) — all over the same fiber spine.</p>`,
+           <p>Outside the building, diverse-path carrier fiber lands at the MPOE in the Network Core. Inter-DSX cross-connects link this campus to other DSX deployments — DSX-IAD (DSGW, 32× VR, in construction), DSX-RNO (32× VPU, Future GPU Product 2027), and DSX-LAS (32× Future GPU Product 2028) — all over the same fiber spine.</p>`,
     stats: [
       ["Function", "E-W (CIN) spine racks"],
       ["Scale steps", "1 / 10 / 32 / 64 / 128 SU"],
