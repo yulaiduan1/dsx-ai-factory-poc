@@ -1035,40 +1035,14 @@ const HOTSPOTS = [
     stackLayer: "DSX Hardware · Cooling",
     intro: "The bridge between the facility cooling loop and the rack — CDUs isolate fluids, regulate pressure, and deliver coolant directly to GPU cold plates.",
     body: `<p>Each Deployment Unit contains dedicated cooling infrastructure including Coolant Distribution Units (CDUs) and secondary loops, plus CRAH units for any remaining air-cooled support equipment. CDUs take warm water from the CUB and deliver it as a clean, technical-grade secondary loop to the cold plates on each GPU tray — what makes hundred-kilowatt racks thermally feasible.</p>
-           <p>NVIDIA's CDU partner ecosystem on the Enterprise Marketplace spans <strong>11 vendors</strong> — <strong>AVC, BOYD, Carrier, CoolIT, Delta, LITEON, Motivair, Nidec, Stulz, Supermicro, and Vertiv</strong> — across both <strong>liquid-to-liquid</strong> and <strong>liquid-to-air</strong> categories, with capacities from <strong>72 kW</strong> (rack-scale liquid-to-air) up to <strong>2.3 MW</strong> (deployment-unit scale). Validation profiles cover up to ten tests per product: hydraulic constant-DP and constant-flow, cold start, flow-sensor accuracy, thermal low-load and nominal-capacity, pump failover, fan failover, group control, and pumping capacity.</p>
-           <div class="cdu-table-wrap">
-             <table class="cdu-table" aria-label="DSX CDU partner products">
-               <thead>
-                 <tr>
-                   <th>Vendor</th><th>Model</th><th>Capacity @ 4 °C ATD</th><th>Flow @ 35 psi</th><th>Validation tests</th><th>Status</th>
-                 </tr>
-               </thead>
-               <tbody>
-                 <tr><td class="vendor">AVC</td><td>CDU135-LTA-RW</td><td class="cap">72 kW</td><td>130 LPM</td><td class="cdu-tests">10 tests (full suite incl. fan &amp; pump failover, group control)</td><td><span class="status mp">MP Ready</span></td></tr>
-                 <tr><td class="vendor">AVC</td><td>CDU1000-LTL-RW</td><td class="cap">1.2 MW</td><td>1,600 LPM</td><td class="cdu-tests">9 tests (no fan failover)</td><td><span class="status sample">Sample Ready</span></td></tr>
-                 <tr><td class="vendor">BOYD</td><td>ROL2300</td><td class="cap">1.1 MW</td><td>2,600 LPM</td><td class="cdu-tests">7 tests (hydraulic, cold start, thermal, pump failover, pumping capacity)</td><td><span class="status mp">MP Ready</span></td></tr>
-                 <tr><td class="vendor">Carrier</td><td>65LL</td><td class="cap">1.2 MW</td><td>2,500 LPM</td><td class="cdu-tests">9 tests (no fan failover)</td><td><span class="status sample">Sample Ready</span></td></tr>
-                 <tr><td class="vendor">CoolIT</td><td>AHx180</td><td class="cap">130 kW</td><td>300 LPM</td><td class="cdu-tests">7 tests (no failover/group control)</td><td><span class="status none">—</span></td></tr>
-                 <tr><td class="vendor">CoolIT</td><td>CHx1500</td><td class="cap">1.5 MW</td><td>1,950 LPM</td><td class="cdu-tests">7 tests (no flow-sensor accuracy / group control)</td><td><span class="status none">—</span></td></tr>
-                 <tr><td class="vendor">Delta</td><td>RDF106CDT5192</td><td class="cap">1.0 MW</td><td>1,500 LPM</td><td class="cdu-tests">8 tests (no fan failover / group control)</td><td><span class="status mp">MP Ready</span></td></tr>
-                 <tr><td class="vendor">LITEON</td><td>LC-LL-WCDU-6011(S)</td><td class="cap">380 kW</td><td>600 LPM</td><td class="cdu-tests">8 tests (no fan failover / group control)</td><td><span class="status sample">Sample Ready</span></td></tr>
-                 <tr><td class="vendor">Motivair</td><td>MHDU5910</td><td class="cap">103 kW</td><td>70 LPM</td><td class="cdu-tests">6 tests (hydraulic, cold start, thermal, pumping capacity)</td><td><span class="status mp">MP Ready</span></td></tr>
-                 <tr><td class="vendor">Motivair</td><td>MCDU50</td><td class="cap">1.7 MW</td><td>1,136 LPM</td><td class="cdu-tests">5 tests (hydraulic, thermal, pumping capacity)</td><td><span class="status mp">MP Ready</span></td></tr>
-                 <tr><td class="vendor">Motivair</td><td>MCDU55</td><td class="cap">1.3 MW</td><td>—</td><td class="cdu-tests">8 tests (no fan failover / group control)</td><td><span class="status none">—</span></td></tr>
-                 <tr><td class="vendor">Nidec</td><td>L10P150-xx-IR03</td><td class="cap">940 kW</td><td>1,025 LPM</td><td class="cdu-tests">9 tests (no fan failover)</td><td><span class="status mp">MP Ready</span></td></tr>
-                 <tr><td class="vendor">Stulz</td><td>SCS15102Wu</td><td class="cap">940 kW</td><td>1,800 LPM</td><td class="cdu-tests">4 tests (hydraulic constant flow, thermal, pumping capacity)</td><td><span class="status none">—</span></td></tr>
-                 <tr><td class="vendor">Supermicro</td><td>Supermicro</td><td class="cap">2.3 MW</td><td>2,600 LPM</td><td class="cdu-tests">9 tests (no fan failover)</td><td><span class="status none">—</span></td></tr>
-                 <tr><td class="vendor">Vertiv</td><td>XDU1350</td><td class="cap">1.3 MW</td><td>1,550 LPM</td><td class="cdu-tests">9 tests (no fan failover)</td><td><span class="status mp">MP Ready</span></td></tr>
-               </tbody>
-             </table>
-           </div>
-           <p class="cdu-note">Wetted materials reported as compatible where specified by the vendor. Source: NVIDIA Enterprise Marketplace · AI Factory DSX Infrastructure product catalog.</p>`,
+           <p>At the DSX 30–500 MW reference scale, the deployment-unit-scale <strong>liquid-to-liquid</strong> CDU is the operative form factor, since the campus runs a facility chilled-water loop (CUB → CDU → cold-plate). High-capacity L2L units keep equipment count and N+1 spare math tractable across the range.</p>
+           <p>The validated CDU partner list is dynamic — see the live catalog on NVIDIA Enterprise Marketplace for current MP-Ready and Sample-Ready products. Each product runs through the CDU self-qualification process covering hydraulic, thermal, redundancy, and control tests.</p>
+           <p class="cdu-note">Source: NVIDIA Enterprise Marketplace · AI Factory DSX Infrastructure product catalog.</p>`,
     stats: [
-      ["Reference spec", "≥ 2.3 MW @ 4 °C ATD"],
+      ["DSX form factor", "Liquid-to-liquid, DU-scale"],
       ["TCS design flow", "≥ 1.5 LPM/kW (ΔT 10 °C)"],
-      ["Categories", "Liquid-to-liquid · Liquid-to-air"],
-      ["Capacity range", "72 kW → 2.3 MW"],
-      ["Partner vendors", "11 (15 product variants)"],
+      ["Validation", "CDU self-qualification suite"],
+      ["Partner list", "Live on NVIDIA Marketplace"],
       ["Redundancy", "N+1 at DU scale · sensors redundant"]
     ],
     bullets: [
@@ -1080,7 +1054,7 @@ const HOTSPOTS = [
       "Supply-chain gating: Sample Ready → MP Ready"
     ],
     extUrl: "https://marketplace.nvidia.com/en-us/enterprise/",
-    extLabel: "Marketplace · CDU partners",
+    extLabel: "Marketplace · Live CDU partner catalog",
     related: ["cooling-plant", "data-hall-compute"],
     pillar: "hardware",
     furtherReading: [
