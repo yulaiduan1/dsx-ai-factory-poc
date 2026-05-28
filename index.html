@@ -1088,7 +1088,7 @@ const HOTSPOTS = [
     ],
     extUrl: "https://www.nvidia.com/en-us/data-center/dgx-superpod/",
     extLabel: "DGX SuperPOD",
-    related: ["data-hall-storage", "cdus", "fiber"],
+    related: ["network-core", "cdus", "fiber"],
     pillar: "hardware",
     furtherReading: [
       { url: "https://nvidianews.nvidia.com/news/nvidia-releases-vera-rubin-dsx-ai-factory-reference-design-and-omniverse-dsx-digital-twin-blueprint-with-broad-industry-support", label: "Vera Rubin DSX Reference Design (announcement)", domain: "nvidianews.nvidia.com" },
@@ -1097,35 +1097,39 @@ const HOTSPOTS = [
     docLink: "#docs/dsx/hardware/compute-data-hall"
   },
   {
-    id: "data-hall-storage",
-    x: 67, y: 66,
-    label: "Storage & Management Hall",
-    category: "Hardware · Storage",
-    title: "Storage & Management Hall",
+    id: "network-core",
+    x: 50, y: 68,
+    label: "Network Core & Shared Services",
+    category: "Network · Shared Services",
+    title: "Network Core & Shared Services",
     stackLayer: "DSX Hardware · Control Plane",
-    intro: "Storage, control plane, and the out-of-band management network — the resilience and recovery side of the data plane.",
-    body: `<p>Adjacent to the Compute Halls, the Network Core blocks house storage racks, control nodes, the North-South network, the Tenant Access Network (TAN), and the Secure Management Network (SMN). The Main Points of Entry (MPOE) — where carrier fiber lands on the campus — also live here.</p>
-           <p>This is where DSX OS resilience surfaces — observability, automated break-fix ticketing, and NVIDIA Health Validation gating at intake. The Network CORE building takes 22 MW of total network load at 415 V, fully backed by UPS — the highest reliability tier on the campus.</p>`,
+    intro: "The central building block flanking the CIN spine — home to tenant access, secure management, high-speed storage, and the control plane that keeps the AI Factory operating around the clock.",
+    body: `<p>The Network Core sits at the center of the AI Factory between the Compute Data Halls. It houses the <strong>CIN Spine</strong> (cluster interconnect spine racks), <strong>Tenant Access Network (TAN)</strong>, <strong>Secure Management Network (SMN)</strong>, <strong>High-Speed Storage (HSS)</strong>, <strong>control nodes</strong>, and <strong>management nodes</strong> — plus <strong>two Meet-Me Rooms (MMRs)</strong> and <strong>two Fiber Entrance Rooms</strong> positioned at the four corners of the CIN spine, where diverse-path carrier fiber lands on the campus from four Service Provider Vaults at the site perimeter.</p>
+           <p>At the 500 MW reference scale, Core IT load is <strong>~23 MW</strong> (CIN Core + TAN/SMN + HSS + control + management), with <strong>~13 MW</strong> Core mechanical, <strong>~4 MW</strong> house power, and <strong>~0.5 MW</strong> MMR load on top. The Core is the <strong>highest-availability tier on campus, targeting 99.999% (5×9s)</strong> versus the Compute Data Halls' 99.9% (3×9s). Power is grid-fed but also supported by standby generators (south of the substation, east of the BESS) and rotary UPS. Mechanical equipment serving the Core — CDUs, technical-water pumps, CRAHs, and the dry coolers / chillers / pumps needed to sustain Core cooling — is also UPS and generator-backed, in contrast to Compute, which relies on BESS ride-through during grid-to-genset transitions.</p>
+           <p>The CIN Spine racks dictate the building geometry: the <strong>500-meter optical budget</strong> from CIN Leaf (in each compute hall) to CIN Spine is what drives the rectilinear 250 MW form factor and the H-shaped floor plan at the 500 MW reference.</p>`,
     stats: [
-      ["Networks hosted", "TAN, SMN, N-S"],
-      ["Also hosts", "Storage, control nodes, MPOE"],
-      ["Core load", "22 MW @ 415 V w/ UPS"],
-      ["Availability", "99.999% (Bus A1)"]
+      ["Core IT load (500 MW ref.)", "~23 MW"],
+      ["Core mechanical", "~13 MW (gen + UPS backed)"],
+      ["Availability target", "99.999% (5×9s)"],
+      ["Power backup", "Standby gensets + rotary UPS"],
+      ["Networks hosted", "CIN Spine · TAN · SMN · HSS"],
+      ["External fiber", "2 MMRs + 2 Fiber Entrance Rooms"]
     ],
     bullets: [
-      "Tenant Access &amp; Secure Management networks",
-      "Storage tiers and control nodes",
-      "MPOE — main carrier fiber entry",
-      "Backed by full UPS + 45 MW gen farm"
+      "Houses CIN Spine racks, TAN/SMN, HSS, control & management nodes",
+      "2 MMRs + 2 Fiber Entrance Rooms at the CIN spine corners",
+      "Generator + rotary UPS backed (vs BESS-only ride-through for Compute)",
+      "Core mechanical equipment also UPS + generator backed",
+      "500 m CIN Leaf → Spine optical budget drives building geometry"
     ],
-    extUrl: "https://www.nvidia.com/en-us/data-center/dgx-superpod/",
-    extLabel: "DGX SuperPOD",
-    related: ["data-hall-compute", "fiber"],
+    extUrl: "https://www.nvidia.com/en-us/networking/spectrum-x/",
+    extLabel: "NVIDIA Spectrum-X",
+    related: ["fiber", "data-hall-compute", "substation"],
     pillar: "hardware",
     furtherReading: [
       { url: "https://docs.nvidia.com/dsx/home", label: "DSX Documentation Home", domain: "docs.nvidia.com" }
     ],
-    docLink: "#docs/dsx/hardware/network-core"
+    docLink: "#docs/dsx/hardware/network-core-shared-services"
   },
   {
     id: "fiber",
@@ -1151,7 +1155,7 @@ const HOTSPOTS = [
     ],
     extUrl: "https://www.nvidia.com/en-us/networking/spectrum-x/",
     extLabel: "NVIDIA Spectrum-X",
-    related: ["data-hall-compute", "data-hall-storage"],
+    related: ["network-core", "data-hall-compute"],
     pillar: "hardware",
     furtherReading: [
       { url: "https://build.nvidia.com/nvidia/omniverse-dsx-blueprint-for-ai-factories", label: "Omniverse DSX Blueprint (digital twin)", domain: "build.nvidia.com" }
@@ -1182,7 +1186,7 @@ const HOTSPOTS = [
     ],
     extUrl: "https://docs.nvidia.com/",
     extLabel: "docs.nvidia.com",
-    related: ["substation", "data-hall-storage"],
+    related: ["substation", "network-core"],
     pillar: "software",
     furtherReading: [
       { url: "https://build.nvidia.com/nvidia/omniverse-dsx-blueprint-for-ai-factories", label: "Omniverse DSX Blueprint (digital twin)", domain: "build.nvidia.com" }
